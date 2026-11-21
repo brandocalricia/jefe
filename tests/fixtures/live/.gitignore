@@ -1,0 +1,2 @@
+# the real run-5 permit.log files are test fixtures; the repository-wide *.log ignore must not drop them
+!*.log

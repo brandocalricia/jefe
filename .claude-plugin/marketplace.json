@@ -1,0 +1,8 @@
+{
+  "name": "jefe",
+  "owner": { "name": "brandocalricia" },
+  "metadata": { "description": "Jefe: for big jobs in Claude Code: one interview and one approval, at Go. A script, not the model, runs the checks and writes the result; the planner is told not to report done on a failed gate." },
+  "plugins": [
+    { "name": "jefe", "source": "./" }
+  ]
+}

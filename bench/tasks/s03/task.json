@@ -1,0 +1,1 @@
+{ "id": "s03", "size": "small", "split": "heldout", "language": "node", "summary": "add a CLI option that must follow the existing option conventions", "test": ["node", "--test"], "expectedFiles": 3 }

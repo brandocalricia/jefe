@@ -1,0 +1,21 @@
+{
+  "sources": [
+    {"file": "corpus/requirements-2025-09.md", "reason": "Current ingest, latency, retention and budget targets."},
+    {"file": "corpus/requirements-2025-03.md", "reason": "Superseded targets, listed as the losing source."},
+    {"file": "corpus/bench-methodology.md", "reason": "Explains which load-test runs are comparable and which are excluded."},
+    {"file": "corpus/bench-results.csv", "reason": "Raw load-test runs used for every computed figure."},
+    {"file": "corpus/pricing-2025-10.md", "reason": "Current node price, HarborDB support and QuillStore licence."},
+    {"file": "corpus/pricing-2025-05.md", "reason": "Superseded pricing sheet, listed as the losing source."},
+    {"file": "corpus/email-thread-licensing.md", "reason": "Vendor's written confirmation of the BasaltKV licence rate."},
+    {"file": "corpus/datasheet-basaltkv.md", "reason": "Shows BasaltKV list price that the vendor email overrides."},
+    {"file": "corpus/datasheet-harbordb.md", "reason": "Vendor latency claim contradicted by our own measurements."},
+    {"file": "corpus/paper-lsm-compaction.md", "reason": "Reports write amplification for leveled compaction."},
+    {"file": "corpus/paper-btree-tail-latency.md", "reason": "Reports the read p99 effect of page splits."},
+    {"file": "corpus/migration-estimate.md", "reason": "Current migration estimates in engineer-weeks."},
+    {"file": "corpus/meeting-2025-06-18.md", "reason": "Holds the older rough migration figure that was replaced."},
+    {"file": "corpus/email-thread-restore-drill.md", "reason": "Restore drill duration and the target it was judged against."},
+    {"file": "corpus/blog-why-basalt-wins.md", "reason": "Persuasive post whose write-rate claim our runs refute."},
+    {"file": "corpus/meeting-2025-10-07.md", "reason": "Decision meeting that withdrew the draft record."},
+    {"file": "corpus/adr-0003-draft.md", "reason": "Withdrawn draft decision record, listed as the losing source."}
+  ]
+}

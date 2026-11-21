@@ -1,0 +1,6 @@
+2026-11-18T08:59:46.453Z | Bash | ask:grant | .jefe/bin/jefe-gate go --goal "Clean announcement of tick CLI from notes.md in announcement.md" --done "announcement.md is 120-180 words, verified by script" --out "no commit, no sending, notes.md unc
+2026-11-18T08:59:59.640Z | Write | write:project | announcement.md
+2026-11-18T09:00:00.509Z | Write | write:.jefe | .jefe/check.sh
+2026-11-18T09:00:01.635Z | Bash | check-script | sh .jefe/check.sh
+2026-11-18T09:00:05.669Z | Bash | wrapper:jefe-gate | .jefe/bin/jefe-gate finish --since start --plan job --goal "tick announcement 120-180 words" --review pending -- sh .jefe/check.sh
+2026-11-18T09:00:18.795Z | Bash | wrapper:jefe-gate | .jefe/bin/jefe-gate allow --clear

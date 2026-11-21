@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "entries": [
+    { "date": "2026-02-03", "desc": "KROGER #1234", "amount": -64.1, "cat": "Groceries" },
+    { "date": "2/10/2026", "desc": "Old gym   membership", "amount": -30, "deleted": true },
+    { "date": "2026-02-14", "desc": "Dinner out", "amount": -52.35 }
+  ]
+}

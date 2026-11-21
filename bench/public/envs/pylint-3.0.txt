@@ -1,0 +1,21 @@
+# pylint-dev/pylint at environment_setup_commit a0ce6e424e3a208f3aed1cbf6e16c40853bec3c0, Python 3.11
+astroid==3.0.3
+coverage==7.17.3
+dill==0.4.1
+execnet==2.1.2
+gitdb==4.0.12
+GitPython==3.2.1
+iniconfig==2.3.1
+isort==5.13.2
+mccabe==0.7.0
+packaging==26.3
+platformdirs==4.14.7
+pluggy==1.7.0
+py-cpuinfo==9.0.0
+pytest==7.4.4
+pytest-benchmark==5.0.1
+pytest-timeout==2.4.0
+pytest-xdist==3.8.0
+smmap==5.0.3
+tomlkit==0.15.2
+typing_extensions==4.16.0

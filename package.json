@@ -1,0 +1,19 @@
+{
+  "name": "jefe",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "brandocalricia",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brandocalricia/jefe"
+  },
+  "type": "module",
+  "description": "Tests and tooling for the Jefe plugin. No dependencies.",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\""
+  }
+}

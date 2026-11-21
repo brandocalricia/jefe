@@ -1,0 +1,1 @@
+{ "name": "dirsync-fixture", "private": true, "type": "module", "main": "src/index.mjs", "scripts": { "test": "node --test" } }

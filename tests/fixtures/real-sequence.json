@@ -1,0 +1,28 @@
+{
+  "note": "Steps with source=real replay the sequence observed in a live /jefe run (task text shortened). Steps with source=synthetic continue it by hand for the demo and are NOT observed. Agent model ids in every step are illustrative; the live log did not record them.",
+  "steps": [
+    { "source": "real", "label": "/jefe submitted", "event": { "type": "start", "task": "add a dark mode toggle to the settings page" }, "expect": { "phase": "INTERVIEW", "agents": 0 } },
+    { "source": "real", "label": "Explore recon agent spawned", "event": { "type": "spawn", "id": "a1", "agentType": "Explore", "model": "claude-haiku-4-5" }, "expect": { "phase": "INTERVIEW", "agents": 1 } },
+    { "source": "real", "label": "recon agent finishes", "event": { "type": "agents", "list": [{ "id": "a1", "status": "completed" }] }, "expect": { "phase": "INTERVIEW", "agents": 1 } },
+    {
+      "source": "real", "label": "AskUserQuestion with 4 interview questions opened",
+      "event": { "type": "question", "questions": [
+        { "question": "Which framework?", "options": [{ "label": "React" }, { "label": "Vue" }, { "label": "Go with Svelte" }] },
+        { "question": "Persist the choice?", "options": [{ "label": "localStorage" }, { "label": "Server" }] },
+        { "question": "Default theme?", "options": [{ "label": "System" }, { "label": "Light" }, { "label": "Dark" }] },
+        { "question": "Add tests?", "options": [{ "label": "Yes" }, { "label": "No" }] }
+      ] },
+      "expect": { "phase": "INTERVIEW" }
+    },
+    { "source": "real", "label": "interview questions answered", "event": { "type": "answer", "answers": { "Which framework?": "React", "Persist the choice?": "localStorage", "Default theme?": "System", "Add tests?": "Yes" } }, "expect": { "phase": "INTERVIEW" } },
+    { "source": "real", "label": "Go/Change question opened", "event": { "type": "question", "questions": [{ "question": "Start the work?", "options": [{ "label": "Go" }, { "label": "Change" }] }] }, "expect": { "phase": "CONFIRM" } },
+    { "source": "real", "label": "answered Go", "event": { "type": "answer", "answers": { "Start the work?": "Go" } }, "expect": { "phase": "DELEGATE" } },
+    { "source": "real", "label": "builder spawned", "event": { "type": "spawn", "id": "b1", "agentType": "jefe:builder", "model": "claude-sonnet-4-6" }, "expect": { "phase": "DELEGATE", "agents": 2 } },
+    { "source": "real", "label": "builder spawned", "event": { "type": "spawn", "id": "b2", "agentType": "jefe:builder", "model": "claude-sonnet-4-6" }, "expect": { "phase": "DELEGATE", "agents": 3 } },
+    { "source": "real", "label": "runner spawned", "event": { "type": "spawn", "id": "b3", "agentType": "jefe:runner", "model": "claude-haiku-4-5" }, "expect": { "phase": "DELEGATE", "agents": 4 } },
+    { "source": "synthetic", "label": "all three finish", "event": { "type": "agents", "list": [{ "id": "b1", "status": "completed" }, { "id": "b2", "status": "completed" }, { "id": "b3", "status": "completed" }] }, "expect": { "phase": "DELEGATE" } },
+    { "source": "synthetic", "label": "verifier spawned", "event": { "type": "spawn", "id": "v1", "agentType": "jefe:runner", "model": "claude-haiku-4-5" }, "expect": { "phase": "REVIEW" } },
+    { "source": "synthetic", "label": "verifier finishes", "event": { "type": "agents", "list": [{ "id": "v1", "status": "completed" }] }, "expect": { "phase": "REVIEW" } },
+    { "source": "synthetic", "label": "turn ends", "event": { "type": "turn_end", "isAborted": false, "end": "pass" }, "expect": { "phase": "REPORT" } }
+  ]
+}

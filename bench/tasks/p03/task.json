@@ -1,0 +1,17 @@
+{
+  "id": "p03",
+  "size": "project",
+  "split": "dev",
+  "language": "node",
+  "summary": "task tracker: add multi-tenant workspaces with roles across domain, store and migration, services, events and audit retention, API and CLI",
+  "test": ["node", "--test"],
+  "expectedFiles": 47,
+  "parts": [
+    { "id": "A", "title": "domain: roles, permission matrix, workspace and membership entities", "hidden": ["ws-domain.test.mjs"] },
+    { "id": "B", "title": "store: version 2 data file, indexes, idempotent migration with dry run", "hidden": ["ws-store.test.mjs", "ws-migrate.test.mjs"] },
+    { "id": "C", "title": "services: workspace-scoped, permission-checked use cases, isolation, members", "hidden": ["ws-access.test.mjs", "ws-members.test.mjs"] },
+    { "id": "D", "title": "events and audit: membership events, workspace on entries, retention rule", "hidden": ["ws-events.test.mjs", "ws-audit.test.mjs"] },
+    { "id": "E", "title": "API routes and CLI commands, including the migrate command", "hidden": ["ws-api.test.mjs", "ws-cli.test.mjs"] },
+    { "id": "F", "title": "existing behaviour unchanged inside a workspace", "hidden": ["ws-regression.test.mjs"] }
+  ]
+}

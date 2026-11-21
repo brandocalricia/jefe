@@ -1,0 +1,1 @@
+{ "id": "s01", "size": "small", "split": "dev", "language": "python", "summary": "bug fix: quoted fields in a CSV line splitter", "test": ["python3", "-m", "unittest", "discover", "-s", "tests"], "expectedFiles": 1 }

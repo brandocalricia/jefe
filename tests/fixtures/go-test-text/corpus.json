@@ -1,0 +1,2418 @@
+{
+ "about": "What `go test <flags> ./...` printed (stdout and stderr merged, as a Makefile shows it) and its exit code, for each project shape and flag set, captured once with go1.26.2 darwin/arm64 (GOTOOLCHAIN=local GOPROXY=off GOFLAGS=-mod=mod, empty for the workspace; the workspace runs ./one/... ./two/... except in its root entry). '(second run)' is the same command run again, served from the build cache. Project folders are shown as /work/<shape>.",
+ "go": "go1.26.2 darwin/arm64",
+ "entries": [
+  {
+   "name": "no-test-files (no flags)",
+   "project": "no-test-files",
+   "flags": [],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files (second run)",
+   "project": "no-test-files",
+   "flags": [],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -v",
+   "project": "no-test-files",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -cover",
+   "project": "no-test-files",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "\tm\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "no-test-files -cover -v",
+   "project": "no-test-files",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "\tm\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "no-test-files -coverprofile=cover.out",
+   "project": "no-test-files",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "\tm\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "no-test-files -race",
+   "project": "no-test-files",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -count=1",
+   "project": "no-test-files",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -short",
+   "project": "no-test-files",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -run=NONE",
+   "project": "no-test-files",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -bench=. -run=^$",
+   "project": "no-test-files",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -failfast",
+   "project": "no-test-files",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -shuffle=on",
+   "project": "no-test-files",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -vet=off",
+   "project": "no-test-files",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files -fullpath",
+   "project": "no-test-files",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "?   \tm\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg (no flags)",
+   "project": "no-test-files-2pkg",
+   "flags": [],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg (second run)",
+   "project": "no-test-files-2pkg",
+   "flags": [],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -v",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -cover",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "\tm/a\t\tcoverage: 0.0% of statements\n\tm/b\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "no-test-files-2pkg -cover -v",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "\tm/a\t\tcoverage: 0.0% of statements\n\tm/b\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "no-test-files-2pkg -coverprofile=cover.out",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "\tm/a\t\tcoverage: 0.0% of statements\n\tm/b\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "no-test-files-2pkg -race",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -count=1",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -short",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -run=NONE",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -bench=. -run=^$",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -failfast",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -shuffle=on",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -vet=off",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "no-test-files-2pkg -fullpath",
+   "project": "no-test-files-2pkg",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "?   \tm/a\t[no test files]\n?   \tm/b\t[no test files]\n"
+  },
+  {
+   "name": "skipped (no flags)",
+   "project": "skipped",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.253s\n"
+  },
+  {
+   "name": "skipped (second run)",
+   "project": "skipped",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "skipped -v",
+   "project": "skipped",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n    m_test.go:5: later\n--- SKIP: TestA (0.00s)\nPASS\nok  \tm\t0.206s\n"
+  },
+  {
+   "name": "skipped -cover",
+   "project": "skipped",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.725s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "skipped -cover -v",
+   "project": "skipped",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n    m_test.go:5: later\n--- SKIP: TestA (0.00s)\nPASS\ncoverage: 0.0% of statements\nok  \tm\t1.889s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "skipped -coverprofile=cover.out",
+   "project": "skipped",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.032s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "skipped -race",
+   "project": "skipped",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.288s\n"
+  },
+  {
+   "name": "skipped -count=1",
+   "project": "skipped",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.801s\n"
+  },
+  {
+   "name": "skipped -short",
+   "project": "skipped",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.066s\n"
+  },
+  {
+   "name": "skipped -run=NONE",
+   "project": "skipped",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.049s [no tests to run]\n"
+  },
+  {
+   "name": "skipped -bench=. -run=^$",
+   "project": "skipped",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t1.770s\n"
+  },
+  {
+   "name": "skipped -failfast",
+   "project": "skipped",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.033s\n"
+  },
+  {
+   "name": "skipped -shuffle=on",
+   "project": "skipped",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.644s\n"
+  },
+  {
+   "name": "skipped -vet=off",
+   "project": "skipped",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "skipped -fullpath",
+   "project": "skipped",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.413s\n"
+  },
+  {
+   "name": "subtests-skipped (no flags)",
+   "project": "subtests-skipped",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.988s\n"
+  },
+  {
+   "name": "subtests-skipped (second run)",
+   "project": "subtests-skipped",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "subtests-skipped -v",
+   "project": "subtests-skipped",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestP\n=== RUN   TestP/a\n    m_test.go:6: later\n=== RUN   TestP/b\n    m_test.go:7: later\n--- PASS: TestP (0.00s)\n    --- SKIP: TestP/a (0.00s)\n    --- SKIP: TestP/b (0.00s)\nPASS\nok  \tm\t0.597s\n"
+  },
+  {
+   "name": "subtests-skipped -cover",
+   "project": "subtests-skipped",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.801s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "subtests-skipped -cover -v",
+   "project": "subtests-skipped",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestP\n=== RUN   TestP/a\n    m_test.go:6: later\n=== RUN   TestP/b\n    m_test.go:7: later\n--- PASS: TestP (0.00s)\n    --- SKIP: TestP/a (0.00s)\n    --- SKIP: TestP/b (0.00s)\nPASS\ncoverage: 0.0% of statements\nok  \tm\t1.941s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "subtests-skipped -coverprofile=cover.out",
+   "project": "subtests-skipped",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.626s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "subtests-skipped -race",
+   "project": "subtests-skipped",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.486s\n"
+  },
+  {
+   "name": "subtests-skipped -count=1",
+   "project": "subtests-skipped",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.012s\n"
+  },
+  {
+   "name": "subtests-skipped -short",
+   "project": "subtests-skipped",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.004s\n"
+  },
+  {
+   "name": "subtests-skipped -run=NONE",
+   "project": "subtests-skipped",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.809s [no tests to run]\n"
+  },
+  {
+   "name": "subtests-skipped -bench=. -run=^$",
+   "project": "subtests-skipped",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t1.945s\n"
+  },
+  {
+   "name": "subtests-skipped -failfast",
+   "project": "subtests-skipped",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.665s\n"
+  },
+  {
+   "name": "subtests-skipped -shuffle=on",
+   "project": "subtests-skipped",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.549s\n"
+  },
+  {
+   "name": "subtests-skipped -vet=off",
+   "project": "subtests-skipped",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "subtests-skipped -fullpath",
+   "project": "subtests-skipped",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.223s\n"
+  },
+  {
+   "name": "passing (no flags)",
+   "project": "passing",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t1.328s\n"
+  },
+  {
+   "name": "passing (second run)",
+   "project": "passing",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "passing -v",
+   "project": "passing",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\n=== RUN   TestB\n=== RUN   TestB/sub\n--- PASS: TestB (0.00s)\n    --- PASS: TestB/sub (0.00s)\nPASS\nok  \tm\t0.958s\n"
+  },
+  {
+   "name": "passing -cover",
+   "project": "passing",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.774s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "passing -cover -v",
+   "project": "passing",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\n=== RUN   TestB\n=== RUN   TestB/sub\n--- PASS: TestB (0.00s)\n    --- PASS: TestB/sub (0.00s)\nPASS\ncoverage: 66.7% of statements\nok  \tm\t1.766s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "passing -coverprofile=cover.out",
+   "project": "passing",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.265s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "passing -race",
+   "project": "passing",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.977s\n"
+  },
+  {
+   "name": "passing -count=1",
+   "project": "passing",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.955s\n"
+  },
+  {
+   "name": "passing -short",
+   "project": "passing",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.001s\n"
+  },
+  {
+   "name": "passing -run=NONE",
+   "project": "passing",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.080s [no tests to run]\n"
+  },
+  {
+   "name": "passing -bench=. -run=^$",
+   "project": "passing",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t1.673s\n"
+  },
+  {
+   "name": "passing -failfast",
+   "project": "passing",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.981s\n"
+  },
+  {
+   "name": "passing -shuffle=on",
+   "project": "passing",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.564s\n"
+  },
+  {
+   "name": "passing -vet=off",
+   "project": "passing",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "passing -fullpath",
+   "project": "passing",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.353s\n"
+  },
+  {
+   "name": "failing (no flags)",
+   "project": "failing",
+   "flags": [],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t1.094s\nFAIL\n"
+  },
+  {
+   "name": "failing (second run)",
+   "project": "failing",
+   "flags": [],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t0.207s\nFAIL\n"
+  },
+  {
+   "name": "failing -v",
+   "project": "failing",
+   "flags": [
+    "-v"
+   ],
+   "exit": 1,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\n=== RUN   TestB\n    m_test.go:6: boom\n--- FAIL: TestB (0.00s)\n=== RUN   TestC\n--- PASS: TestC (0.00s)\nFAIL\nFAIL\tm\t1.531s\nFAIL\n"
+  },
+  {
+   "name": "failing -cover",
+   "project": "failing",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\ncoverage: 0.0% of statements\nFAIL\tm\t1.930s\nFAIL\n"
+  },
+  {
+   "name": "failing -cover -v",
+   "project": "failing",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 1,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\n=== RUN   TestB\n    m_test.go:6: boom\n--- FAIL: TestB (0.00s)\n=== RUN   TestC\n--- PASS: TestC (0.00s)\nFAIL\ncoverage: 0.0% of statements\nFAIL\tm\t2.069s\nFAIL\n"
+  },
+  {
+   "name": "failing -coverprofile=cover.out",
+   "project": "failing",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\ncoverage: 0.0% of statements\nFAIL\tm\t0.867s\nFAIL\n"
+  },
+  {
+   "name": "failing -race",
+   "project": "failing",
+   "flags": [
+    "-race"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t1.430s\nFAIL\n"
+  },
+  {
+   "name": "failing -count=1",
+   "project": "failing",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t1.834s\nFAIL\n"
+  },
+  {
+   "name": "failing -short",
+   "project": "failing",
+   "flags": [
+    "-short"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t1.979s\nFAIL\n"
+  },
+  {
+   "name": "failing -run=NONE",
+   "project": "failing",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.095s [no tests to run]\n"
+  },
+  {
+   "name": "failing -bench=. -run=^$",
+   "project": "failing",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t1.738s\n"
+  },
+  {
+   "name": "failing -failfast",
+   "project": "failing",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t1.949s\nFAIL\n"
+  },
+  {
+   "name": "failing -shuffle=on",
+   "project": "failing",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 1,
+   "text": "-test.shuffle 1795224784062637000\n--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t1.583s\nFAIL\n"
+  },
+  {
+   "name": "failing -vet=off",
+   "project": "failing",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    m_test.go:6: boom\nFAIL\nFAIL\tm\t1.524s\nFAIL\n"
+  },
+  {
+   "name": "failing -fullpath",
+   "project": "failing",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestB (0.00s)\n    /work/failing/m_test.go:6: boom\nFAIL\nFAIL\tm\t1.052s\nFAIL\n"
+  },
+  {
+   "name": "panic (no flags)",
+   "project": "panic",
+   "flags": [],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x100287e04]\n\ngoroutine 21 [running]:\ntesting.tRunner.func1.2({0x1003babe0, 0x100404ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x1003babe0?, 0x100404ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x20ba24e6a248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x20ba24e6a248, 0x1003e3ef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t1.176s\nFAIL\n"
+  },
+  {
+   "name": "panic (second run)",
+   "project": "panic",
+   "flags": [],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x102883e04]\n\ngoroutine 34 [running]:\ntesting.tRunner.func1.2({0x1029b6be0, 0x102a00ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x1029b6be0?, 0x102a00ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x287b11d60248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x287b11d60248, 0x1029dfef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t0.207s\nFAIL\n"
+  },
+  {
+   "name": "panic -v",
+   "project": "panic",
+   "flags": [
+    "-v"
+   ],
+   "exit": 1,
+   "text": "=== RUN   TestA\n--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x10095fe04]\n\ngoroutine 18 [running]:\ntesting.tRunner.func1.2({0x100a92be0, 0x100adcea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x100a92be0?, 0x100adcea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x3557d126a248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x3557d126a248, 0x100abbef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t1.564s\nFAIL\n"
+  },
+  {
+   "name": "panic -cover",
+   "project": "panic",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x104bcd324]\n\ngoroutine 18 [running]:\ntesting.tRunner.func1.2({0x104d36fc0, 0x104d89270})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x104d36fc0?, 0x104d89270?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x7d26108ea248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x7d26108ea248, 0x104d666d8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t1.962s\nFAIL\n"
+  },
+  {
+   "name": "panic -cover -v",
+   "project": "panic",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 1,
+   "text": "=== RUN   TestA\n--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x10481d324]\n\ngoroutine 21 [running]:\ntesting.tRunner.func1.2({0x104986fc0, 0x1049d9270})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x104986fc0?, 0x1049d9270?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x12431ba6a248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x12431ba6a248, 0x1049b66d8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t2.003s\nFAIL\n"
+  },
+  {
+   "name": "panic -coverprofile=cover.out",
+   "project": "panic",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x102431324]\n\ngoroutine 6 [running]:\ntesting.tRunner.func1.2({0x10259afc0, 0x1025ed270})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x10259afc0?, 0x1025ed270?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x6d13c4724248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x6d13c4724248, 0x1025ca6d8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t0.479s\nFAIL\n"
+  },
+  {
+   "name": "panic -race",
+   "project": "panic",
+   "flags": [
+    "-race"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x102874d44]\n\ngoroutine 6 [running]:\ntesting.tRunner.func1.2({0x1029df820, 0x102a335c0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x2b8\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x460\npanic({0x1029df820?, 0x102a335c0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0xc0000ce248?)\n\t/work/panic/m_test.go:5 +0x24\ntesting.tRunner(0xc0000ce248, 0x102a0acb8)\n\t/usr/local/go/src/testing/testing.go:2036 +0x168\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x7c0\nFAIL\tm\t1.655s\nFAIL\n"
+  },
+  {
+   "name": "panic -count=1",
+   "project": "panic",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x1022c7e04]\n\ngoroutine 6 [running]:\ntesting.tRunner.func1.2({0x1023fabe0, 0x102444ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x1023fabe0?, 0x102444ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x6a3acb596248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x6a3acb596248, 0x102423ef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t2.151s\nFAIL\n"
+  },
+  {
+   "name": "panic -short",
+   "project": "panic",
+   "flags": [
+    "-short"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x100db3e04]\n\ngoroutine 18 [running]:\ntesting.tRunner.func1.2({0x100ee6be0, 0x100f30ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x100ee6be0?, 0x100f30ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x320c44950248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x320c44950248, 0x100f0fef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t2.009s\nFAIL\n"
+  },
+  {
+   "name": "panic -run=NONE",
+   "project": "panic",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.706s [no tests to run]\n"
+  },
+  {
+   "name": "panic -bench=. -run=^$",
+   "project": "panic",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t1.854s\n"
+  },
+  {
+   "name": "panic -failfast",
+   "project": "panic",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x1010e7e04]\n\ngoroutine 6 [running]:\ntesting.tRunner.func1.2({0x10121abe0, 0x101264ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x10121abe0?, 0x101264ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0xd8d99910248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0xd8d99910248, 0x101243ef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t1.840s\nFAIL\n"
+  },
+  {
+   "name": "panic -shuffle=on",
+   "project": "panic",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 1,
+   "text": "-test.shuffle 1795224784431440000\n--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x100f6be04]\n\ngoroutine 34 [running]:\ntesting.tRunner.func1.2({0x10109ebe0, 0x1010e8ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x10109ebe0?, 0x1010e8ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x2a5f7305c248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x2a5f7305c248, 0x1010c7ef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t1.652s\nFAIL\n"
+  },
+  {
+   "name": "panic -vet=off",
+   "project": "panic",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x101017e04]\n\ngoroutine 18 [running]:\ntesting.tRunner.func1.2({0x10114abe0, 0x101194ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x10114abe0?, 0x101194ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x3f16d34ea248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x3f16d34ea248, 0x101173ef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t1.565s\nFAIL\n"
+  },
+  {
+   "name": "panic -fullpath",
+   "project": "panic",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 1,
+   "text": "--- FAIL: TestA (0.00s)\npanic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]\n[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x1002a3e04]\n\ngoroutine 3 [running]:\ntesting.tRunner.func1.2({0x1003d6be0, 0x100420ea0})\n\t/usr/local/go/src/testing/testing.go:1974 +0x1a0\ntesting.tRunner.func1()\n\t/usr/local/go/src/testing/testing.go:1977 +0x318\npanic({0x1003d6be0?, 0x100420ea0?})\n\t/usr/local/go/src/runtime/panic.go:860 +0x12c\nm.TestA(0x3c3d1986c248?)\n\t/work/panic/m_test.go:5 +0x4\ntesting.tRunner(0x3c3d1986c248, 0x1003ffef8)\n\t/usr/local/go/src/testing/testing.go:2036 +0xc4\ncreated by testing.(*T).Run in goroutine 1\n\t/usr/local/go/src/testing/testing.go:2101 +0x3a8\nFAIL\tm\t0.771s\nFAIL\n"
+  },
+  {
+   "name": "build-error-test (no flags)",
+   "project": "build-error-test",
+   "flags": [],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test (second run)",
+   "project": "build-error-test",
+   "flags": [],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -v",
+   "project": "build-error-test",
+   "flags": [
+    "-v"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -cover",
+   "project": "build-error-test",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -cover -v",
+   "project": "build-error-test",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -coverprofile=cover.out",
+   "project": "build-error-test",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -race",
+   "project": "build-error-test",
+   "flags": [
+    "-race"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -count=1",
+   "project": "build-error-test",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -short",
+   "project": "build-error-test",
+   "flags": [
+    "-short"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -run=NONE",
+   "project": "build-error-test",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -bench=. -run=^$",
+   "project": "build-error-test",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -failfast",
+   "project": "build-error-test",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -shuffle=on",
+   "project": "build-error-test",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -vet=off",
+   "project": "build-error-test",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-test -fullpath",
+   "project": "build-error-test",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m_test.go:5:32: undefined: undefinedThing\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package (no flags)",
+   "project": "build-error-package",
+   "flags": [],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package (second run)",
+   "project": "build-error-package",
+   "flags": [],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -v",
+   "project": "build-error-package",
+   "flags": [
+    "-v"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -cover",
+   "project": "build-error-package",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:174: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -cover -v",
+   "project": "build-error-package",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:174: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -coverprofile=cover.out",
+   "project": "build-error-package",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:174: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -race",
+   "project": "build-error-package",
+   "flags": [
+    "-race"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -count=1",
+   "project": "build-error-package",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -short",
+   "project": "build-error-package",
+   "flags": [
+    "-short"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -run=NONE",
+   "project": "build-error-package",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -bench=. -run=^$",
+   "project": "build-error-package",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -failfast",
+   "project": "build-error-package",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -shuffle=on",
+   "project": "build-error-package",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -vet=off",
+   "project": "build-error-package",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "build-error-package -fullpath",
+   "project": "build-error-package",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 1,
+   "text": "# m [m.test]\n./m.go:2:23: cannot use \"x\" (untyped string constant) as int value in return statement\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure (no flags)",
+   "project": "vet-failure",
+   "flags": [],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure (second run)",
+   "project": "vet-failure",
+   "flags": [],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -v",
+   "project": "vet-failure",
+   "flags": [
+    "-v"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -cover",
+   "project": "vet-failure",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:175: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -cover -v",
+   "project": "vet-failure",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:175: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -coverprofile=cover.out",
+   "project": "vet-failure",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:175: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -race",
+   "project": "vet-failure",
+   "flags": [
+    "-race"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -count=1",
+   "project": "vet-failure",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -short",
+   "project": "vet-failure",
+   "flags": [
+    "-short"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -run=NONE",
+   "project": "vet-failure",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -bench=. -run=^$",
+   "project": "vet-failure",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -failfast",
+   "project": "vet-failure",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -shuffle=on",
+   "project": "vet-failure",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "vet-failure -vet=off",
+   "project": "vet-failure",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.408s\n"
+  },
+  {
+   "name": "vet-failure -fullpath",
+   "project": "vet-failure",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 1,
+   "text": "# m\n# [m]\n./m.go:3:24: fmt.Printf format %d has arg \"x\" of wrong type string\nFAIL\tm [build failed]\nFAIL\n"
+  },
+  {
+   "name": "testmain-exit0 (no flags)",
+   "project": "testmain-exit0",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.834s\n"
+  },
+  {
+   "name": "testmain-exit0 (second run)",
+   "project": "testmain-exit0",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.283s\n"
+  },
+  {
+   "name": "testmain-exit0 -v",
+   "project": "testmain-exit0",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.426s\n"
+  },
+  {
+   "name": "testmain-exit0 -cover",
+   "project": "testmain-exit0",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.795s\n"
+  },
+  {
+   "name": "testmain-exit0 -cover -v",
+   "project": "testmain-exit0",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.074s\n"
+  },
+  {
+   "name": "testmain-exit0 -coverprofile=cover.out",
+   "project": "testmain-exit0",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.705s\n"
+  },
+  {
+   "name": "testmain-exit0 -race",
+   "project": "testmain-exit0",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.526s\n"
+  },
+  {
+   "name": "testmain-exit0 -count=1",
+   "project": "testmain-exit0",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.851s\n"
+  },
+  {
+   "name": "testmain-exit0 -short",
+   "project": "testmain-exit0",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.126s\n"
+  },
+  {
+   "name": "testmain-exit0 -run=NONE",
+   "project": "testmain-exit0",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.048s\n"
+  },
+  {
+   "name": "testmain-exit0 -bench=. -run=^$",
+   "project": "testmain-exit0",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.835s\n"
+  },
+  {
+   "name": "testmain-exit0 -failfast",
+   "project": "testmain-exit0",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.059s\n"
+  },
+  {
+   "name": "testmain-exit0 -shuffle=on",
+   "project": "testmain-exit0",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.448s\n"
+  },
+  {
+   "name": "testmain-exit0 -vet=off",
+   "project": "testmain-exit0",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.404s\n"
+  },
+  {
+   "name": "testmain-exit0 -fullpath",
+   "project": "testmain-exit0",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.400s\n"
+  },
+  {
+   "name": "setup-failure (no flags)",
+   "project": "setup-failure",
+   "flags": [],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure (second run)",
+   "project": "setup-failure",
+   "flags": [],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -v",
+   "project": "setup-failure",
+   "flags": [
+    "-v"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -cover",
+   "project": "setup-failure",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -cover -v",
+   "project": "setup-failure",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -coverprofile=cover.out",
+   "project": "setup-failure",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -race",
+   "project": "setup-failure",
+   "flags": [
+    "-race"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -count=1",
+   "project": "setup-failure",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -short",
+   "project": "setup-failure",
+   "flags": [
+    "-short"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -run=NONE",
+   "project": "setup-failure",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -bench=. -run=^$",
+   "project": "setup-failure",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -failfast",
+   "project": "setup-failure",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -shuffle=on",
+   "project": "setup-failure",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -vet=off",
+   "project": "setup-failure",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "setup-failure -fullpath",
+   "project": "setup-failure",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 1,
+   "text": "go: finding module for package example.com/nope\n# m\nm_test.go:4:2: cannot find module providing package example.com/nope: module lookup disabled by GOPROXY=off\nFAIL\tm [setup failed]\nFAIL\n"
+  },
+  {
+   "name": "examples-only (no flags)",
+   "project": "examples-only",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.712s\n"
+  },
+  {
+   "name": "examples-only (second run)",
+   "project": "examples-only",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "examples-only -v",
+   "project": "examples-only",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   ExampleF\n--- PASS: ExampleF (0.00s)\nPASS\nok  \tm\t0.429s\n"
+  },
+  {
+   "name": "examples-only -cover",
+   "project": "examples-only",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.661s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "examples-only -cover -v",
+   "project": "examples-only",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   ExampleF\n--- PASS: ExampleF (0.00s)\nPASS\ncoverage: 66.7% of statements\nok  \tm\t2.019s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "examples-only -coverprofile=cover.out",
+   "project": "examples-only",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.133s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "examples-only -race",
+   "project": "examples-only",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.352s\n"
+  },
+  {
+   "name": "examples-only -count=1",
+   "project": "examples-only",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.219s\n"
+  },
+  {
+   "name": "examples-only -short",
+   "project": "examples-only",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.364s\n"
+  },
+  {
+   "name": "examples-only -run=NONE",
+   "project": "examples-only",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.746s [no tests to run]\n"
+  },
+  {
+   "name": "examples-only -bench=. -run=^$",
+   "project": "examples-only",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t2.085s\n"
+  },
+  {
+   "name": "examples-only -failfast",
+   "project": "examples-only",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.143s\n"
+  },
+  {
+   "name": "examples-only -shuffle=on",
+   "project": "examples-only",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.810s\n"
+  },
+  {
+   "name": "examples-only -vet=off",
+   "project": "examples-only",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "examples-only -fullpath",
+   "project": "examples-only",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.120s\n"
+  },
+  {
+   "name": "benchmarks-only (no flags)",
+   "project": "benchmarks-only",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.412s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only (second run)",
+   "project": "benchmarks-only",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t(cached) [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -v",
+   "project": "benchmarks-only",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "testing: warning: no tests to run\nPASS\nok  \tm\t0.287s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -cover",
+   "project": "benchmarks-only",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.682s\tcoverage: 0.0% of statements [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -cover -v",
+   "project": "benchmarks-only",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "testing: warning: no tests to run\nPASS\ncoverage: 0.0% of statements\nok  \tm\t1.933s\tcoverage: 0.0% of statements [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -coverprofile=cover.out",
+   "project": "benchmarks-only",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.058s\tcoverage: 0.0% of statements [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -race",
+   "project": "benchmarks-only",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.227s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -count=1",
+   "project": "benchmarks-only",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.664s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -short",
+   "project": "benchmarks-only",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.570s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -run=NONE",
+   "project": "benchmarks-only",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.932s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -bench=. -run=^$",
+   "project": "benchmarks-only",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "goos: darwin\ngoarch: arm64\npkg: m\ncpu: Apple M4\nBenchmarkF-10    \t1000000000\t         0.4563 ns/op\nPASS\nok  \tm\t2.531s\n"
+  },
+  {
+   "name": "benchmarks-only -failfast",
+   "project": "benchmarks-only",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.658s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -shuffle=on",
+   "project": "benchmarks-only",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.864s [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -vet=off",
+   "project": "benchmarks-only",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t(cached) [no tests to run]\n"
+  },
+  {
+   "name": "benchmarks-only -fullpath",
+   "project": "benchmarks-only",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.531s [no tests to run]\n"
+  },
+  {
+   "name": "fuzz-only (no flags)",
+   "project": "fuzz-only",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.576s\n"
+  },
+  {
+   "name": "fuzz-only (second run)",
+   "project": "fuzz-only",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "fuzz-only -v",
+   "project": "fuzz-only",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   FuzzF\n=== RUN   FuzzF/seed#0\n--- PASS: FuzzF (0.00s)\n    --- PASS: FuzzF/seed#0 (0.00s)\nPASS\nok  \tm\t0.439s\n"
+  },
+  {
+   "name": "fuzz-only -cover",
+   "project": "fuzz-only",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.113s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "fuzz-only -cover -v",
+   "project": "fuzz-only",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   FuzzF\n=== RUN   FuzzF/seed#0\n--- PASS: FuzzF (0.00s)\n    --- PASS: FuzzF/seed#0 (0.00s)\nPASS\ncoverage: 66.7% of statements\nok  \tm\t1.595s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "fuzz-only -coverprofile=cover.out",
+   "project": "fuzz-only",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.895s\tcoverage: 66.7% of statements\n"
+  },
+  {
+   "name": "fuzz-only -race",
+   "project": "fuzz-only",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.344s\n"
+  },
+  {
+   "name": "fuzz-only -count=1",
+   "project": "fuzz-only",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.964s\n"
+  },
+  {
+   "name": "fuzz-only -short",
+   "project": "fuzz-only",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.913s\n"
+  },
+  {
+   "name": "fuzz-only -run=NONE",
+   "project": "fuzz-only",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.101s [no tests to run]\n"
+  },
+  {
+   "name": "fuzz-only -bench=. -run=^$",
+   "project": "fuzz-only",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t2.071s\n"
+  },
+  {
+   "name": "fuzz-only -failfast",
+   "project": "fuzz-only",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.780s\n"
+  },
+  {
+   "name": "fuzz-only -shuffle=on",
+   "project": "fuzz-only",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.077s\n"
+  },
+  {
+   "name": "fuzz-only -vet=off",
+   "project": "fuzz-only",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "fuzz-only -fullpath",
+   "project": "fuzz-only",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.478s\n"
+  },
+  {
+   "name": "fuzz-only -fuzz=FuzzF",
+   "project": "fuzz-only",
+   "flags": [
+    "-run=^$",
+    "-fuzz=FuzzF",
+    "-fuzztime=2s"
+   ],
+   "exit": 0,
+   "text": "fuzz: elapsed: 0s, gathering baseline coverage: 0/1 completed\nfuzz: elapsed: 0s, gathering baseline coverage: 1/1 completed, now fuzzing with 10 workers\nfuzz: elapsed: 2s, execs: 647582 (309519/sec), new interesting: 1 (total: 2)\nPASS\nok  \tm\t2.283s\n"
+  },
+  {
+   "name": "no-statements (no flags)",
+   "project": "no-statements",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t0.197s\n"
+  },
+  {
+   "name": "no-statements (second run)",
+   "project": "no-statements",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "no-statements -v",
+   "project": "no-statements",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\nPASS\nok  \tm\t0.916s\n"
+  },
+  {
+   "name": "no-statements -cover",
+   "project": "no-statements",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.378s\tcoverage: [no statements]\n"
+  },
+  {
+   "name": "no-statements -cover -v",
+   "project": "no-statements",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\nPASS\ncoverage: [no statements]\nok  \tm\t1.850s\tcoverage: [no statements]\n"
+  },
+  {
+   "name": "no-statements -coverprofile=cover.out",
+   "project": "no-statements",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.938s\tcoverage: [no statements]\n"
+  },
+  {
+   "name": "no-statements -race",
+   "project": "no-statements",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.211s\n"
+  },
+  {
+   "name": "no-statements -count=1",
+   "project": "no-statements",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t0.198s\n"
+  },
+  {
+   "name": "no-statements -short",
+   "project": "no-statements",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.118s\n"
+  },
+  {
+   "name": "no-statements -run=NONE",
+   "project": "no-statements",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.652s [no tests to run]\n"
+  },
+  {
+   "name": "no-statements -bench=. -run=^$",
+   "project": "no-statements",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm\t2.106s\n"
+  },
+  {
+   "name": "no-statements -failfast",
+   "project": "no-statements",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.982s\n"
+  },
+  {
+   "name": "no-statements -shuffle=on",
+   "project": "no-statements",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t1.751s\n"
+  },
+  {
+   "name": "no-statements -vet=off",
+   "project": "no-statements",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t(cached)\n"
+  },
+  {
+   "name": "no-statements -fullpath",
+   "project": "no-statements",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm\t2.031s\n"
+  },
+  {
+   "name": "nested (no flags)",
+   "project": "nested",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.300s\n?   \tm/b\t[no test files]\nok  \tm/c\t1.393s\n"
+  },
+  {
+   "name": "nested (second run)",
+   "project": "nested",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \tm/a\t(cached)\n?   \tm/b\t[no test files]\nok  \tm/c\t(cached)\n"
+  },
+  {
+   "name": "nested -v",
+   "project": "nested",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\nPASS\nok  \tm/a\t0.828s\n?   \tm/b\t[no test files]\n=== RUN   TestC\n    c_test.go:5: later\n--- SKIP: TestC (0.00s)\nPASS\nok  \tm/c\t1.233s\n"
+  },
+  {
+   "name": "nested -cover",
+   "project": "nested",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.691s\tcoverage: 100.0% of statements\n\tm/b\t\tcoverage: 0.0% of statements\nok  \tm/c\t1.897s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "nested -cover -v",
+   "project": "nested",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestA\n--- PASS: TestA (0.00s)\nPASS\ncoverage: 100.0% of statements\nok  \tm/a\t1.787s\tcoverage: 100.0% of statements\n\tm/b\t\tcoverage: 0.0% of statements\n=== RUN   TestC\n    c_test.go:5: later\n--- SKIP: TestC (0.00s)\nPASS\ncoverage: 0.0% of statements\nok  \tm/c\t1.967s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "nested -coverprofile=cover.out",
+   "project": "nested",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.110s\tcoverage: 100.0% of statements\n\tm/b\t\tcoverage: 0.0% of statements\nok  \tm/c\t1.301s\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "nested -race",
+   "project": "nested",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.350s\n?   \tm/b\t[no test files]\nok  \tm/c\t1.807s\n"
+  },
+  {
+   "name": "nested -count=1",
+   "project": "nested",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.962s\n?   \tm/b\t[no test files]\nok  \tm/c\t2.170s\n"
+  },
+  {
+   "name": "nested -short",
+   "project": "nested",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.879s\n?   \tm/b\t[no test files]\nok  \tm/c\t2.052s\n"
+  },
+  {
+   "name": "nested -run=NONE",
+   "project": "nested",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t2.124s [no tests to run]\n?   \tm/b\t[no test files]\nok  \tm/c\t1.962s [no tests to run]\n"
+  },
+  {
+   "name": "nested -bench=. -run=^$",
+   "project": "nested",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \tm/a\t1.659s\n?   \tm/b\t[no test files]\nPASS\nok  \tm/c\t2.143s\n"
+  },
+  {
+   "name": "nested -failfast",
+   "project": "nested",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.478s\n?   \tm/b\t[no test files]\nok  \tm/c\t1.646s\n"
+  },
+  {
+   "name": "nested -shuffle=on",
+   "project": "nested",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t1.227s\n?   \tm/b\t[no test files]\nok  \tm/c\t1.426s\n"
+  },
+  {
+   "name": "nested -vet=off",
+   "project": "nested",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t(cached)\n?   \tm/b\t[no test files]\nok  \tm/c\t(cached)\n"
+  },
+  {
+   "name": "nested -fullpath",
+   "project": "nested",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \tm/a\t0.691s\n?   \tm/b\t[no test files]\nok  \tm/c\t0.873s\n"
+  },
+  {
+   "name": "workspace (no flags)",
+   "project": "workspace",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t0.749s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace (second run)",
+   "project": "workspace",
+   "flags": [],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t(cached)\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -v",
+   "project": "workspace",
+   "flags": [
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestOne\n--- PASS: TestOne (0.00s)\nPASS\nok  \texample.com/one\t0.254s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -cover",
+   "project": "workspace",
+   "flags": [
+    "-cover"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t1.362s\tcoverage: 100.0% of statements\n\texample.com/two\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "workspace -cover -v",
+   "project": "workspace",
+   "flags": [
+    "-cover",
+    "-v"
+   ],
+   "exit": 0,
+   "text": "=== RUN   TestOne\n--- PASS: TestOne (0.00s)\nPASS\ncoverage: 100.0% of statements\nok  \texample.com/one\t2.047s\tcoverage: 100.0% of statements\n\texample.com/two\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "workspace -coverprofile=cover.out",
+   "project": "workspace",
+   "flags": [
+    "-coverprofile=cover.out"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t1.970s\tcoverage: 100.0% of statements\n\texample.com/two\t\tcoverage: 0.0% of statements\n"
+  },
+  {
+   "name": "workspace -race",
+   "project": "workspace",
+   "flags": [
+    "-race"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t2.306s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -count=1",
+   "project": "workspace",
+   "flags": [
+    "-count=1"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t2.113s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -short",
+   "project": "workspace",
+   "flags": [
+    "-short"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t2.005s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -run=NONE",
+   "project": "workspace",
+   "flags": [
+    "-run=NONE"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t1.791s [no tests to run]\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -bench=. -run=^$",
+   "project": "workspace",
+   "flags": [
+    "-bench=.",
+    "-run=^$"
+   ],
+   "exit": 0,
+   "text": "PASS\nok  \texample.com/one\t1.783s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -failfast",
+   "project": "workspace",
+   "flags": [
+    "-failfast"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t1.828s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -shuffle=on",
+   "project": "workspace",
+   "flags": [
+    "-shuffle=on"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t1.610s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -vet=off",
+   "project": "workspace",
+   "flags": [
+    "-vet=off"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t(cached)\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace -fullpath",
+   "project": "workspace",
+   "flags": [
+    "-fullpath"
+   ],
+   "exit": 0,
+   "text": "ok  \texample.com/one\t1.392s\n?   \texample.com/two\t[no test files]\n"
+  },
+  {
+   "name": "workspace ./... at the workspace root",
+   "project": "workspace",
+   "flags": [],
+   "exit": 1,
+   "text": "# ./...\npattern ./...: directory prefix . does not contain modules listed in go.work or their selected dependencies\nFAIL\t./... [setup failed]\nFAIL\n"
+  }
+ ]
+}

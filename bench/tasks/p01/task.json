@@ -1,0 +1,16 @@
+{
+  "id": "p01",
+  "size": "project",
+  "split": "dev",
+  "language": "node",
+  "summary": "ledgerly personal-finance tool built from scratch: CSV import, categorisation rules, budgets and monthly summaries, versioned JSON storage, and a CLI",
+  "test": ["node", "--test"],
+  "expectedFiles": 24,
+  "parts": [
+    { "id": "A", "title": "CSV import: parser, date and amount formats, row validation, duplicate detection", "hidden": ["p01-a-import.test.mjs"] },
+    { "id": "B", "title": "Categorisation rules: validation, ordered first-match rules", "hidden": ["p01-b-rules.test.mjs"] },
+    { "id": "C", "title": "Budgets and monthly summaries: integer cents, yearly split, carry-over, rounding", "hidden": ["p01-c-budgets.test.mjs"] },
+    { "id": "D", "title": "Storage: versioned JSON ledger, v1 to v2 migration, idempotent import, atomic save", "hidden": ["p01-d-storage.test.mjs"] },
+    { "id": "E", "title": "Command line: import, categorize, report, budget with exact output and exit codes", "hidden": ["p01-e-cli.test.mjs"] }
+  ]
+}

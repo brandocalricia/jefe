@@ -1,0 +1,41 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+permissions:
+  contents: read
+jobs:
+  test:
+    name: test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    timeout-minutes: 20
+    env:
+      JEFE_TMUX_TESTS: "1" # the tmux tests of tests/live-harness.test.mjs (opt-in); the speed budgets (JEFE_PERF_TESTS) stay off on CI
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Git identity for tests that make commits (global, so a test repo's own identity still wins)
+        run: |
+          git config --global user.name ci
+          git config --global user.email ci@example.invalid
+      - name: Unit tests (reducer, band, registry, stamp, bench, manifests)
+        run: npm test
+      - name: Manifest validation (node only, no python)
+        run: |
+          node -e "const fs=require('fs'); for (const f of ['.claude-plugin/plugin.json','.claude-plugin/marketplace.json','hooks/hooks.json','package.json','bench/prices.json']) { const j=JSON.parse(fs.readFileSync(f,'utf8')); if (!j || typeof j!=='object') throw new Error(f); console.log('ok', f) }"
+          node --test tests/manifest.test.mjs tests/skill-gate.test.mjs
+      - name: Benchmark estimate makes no model call
+        run: node bench/run.mjs --estimate --pilot

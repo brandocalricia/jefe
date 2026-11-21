@@ -1,0 +1,11 @@
+<!doctype html>
+<html><head><title>{{ page.title }} - {{ site.title }}</title><link rel="stylesheet" href="/static/css/site.css"></head>
+<body>
+{% include "header.html" %}
+<main>
+{{{ content }}}
+{% if page.date %}<p class="meta">{{ page.date }}{% for tag in page.tags %} <a href="{{ tag.url }}">{{ tag.name }}</a>{% endfor %}</p>{% endif %}
+{% if prev %}<a rel="prev" href="{{ prev.url }}">{{ prev.title }}</a>{% endif %}
+{% if next %}<a rel="next" href="{{ next.url }}">{{ next.title }}</a>{% endif %}
+</main>
+</body></html>

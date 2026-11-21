@@ -1,0 +1,188 @@
+#!/usr/bin/env node
+// jefe-gate: zero-model-token checks for the Jefe done gate. No dependencies. No network unless you add a provider: then only `ask` talks to it.
+// It never changes your project. It writes only Jefe's own files, always mode 0600 in folders 0700, never through a symlink:
+//   (the UserPromptSubmit hook hooks/task.mjs writes <project>/.jefe/task.md for /jefe prompts; start only reads it)
+//   go          <project>/.jefe/goal.md, prefs (.jefe/prefs.json), the job's approved command kinds (<registry>/run/<key>.allow.json, outside the project) and, with --branch, a jefe/<slug> git branch
+//               Every script that creates .jefe/ also writes .jefe/.gitignore ("*"); .jefe/ and .claude/settings.local.json never count in size, file lists, the secrets scan or --commit
+//   start       <jefe home>/run/<key>.level.json (level in effect) and <key>.gate.json (start snapshot, cleared parked state),
+//               and once, <jefe home>/config.json (hinted=true) on the first run with the default level
+//   level set|unset   <jefe home>/config.json, or <project>/.jefe/config.json with --project (and trustedProjects in config.json)
+//   park        <jefe home>/run/<key>.gate.json (parked reason and time)
+// <jefe home> is ${JEFE_HOME:-~/.claude/jefe}. finish also writes <project>/.jefe/handoff.md and appends <project>/.jefe/log.md, and
+// commits to the project's own git repository only when asked (--commit). Jefe never writes the user's settings files: the approved command
+// kinds of a job are <registry>/run/<key>.allow.json, outside the project (go writes it; hooks/permit.mjs reads it); allow --clear, park, and the end of a job deactivate it.
+//
+//   jefe-gate size [--base <ref> | --since <start|ref>]   size: SMALL|MEDIUM|LARGE files=<n> lines=<n> triggers=<list|none>
+//   jefe-gate secrets [--staged]      SECRET <file>:<line> <pattern>   (never prints values); exit 1 on a hit
+//   jefe-gate tests [--timeout <s>]   tests: PASS|FAIL|TIMEOUT (<command>[, <counts>], <s>s)   or   tests: none found
+//   jefe-gate context                 context: <n>k of <n>k tokens (ok | over: hand off to a fresh session)
+//   jefe-gate cost                    cost: $<usd> (session so far, approximate)   or   cost: n/a
+//   jefe-gate all [--deadline <s>] [--since <start|ref>]   size, secrets, tests, then gate: PASS|FAIL (gate: PASS (no tests found, no checks given) when nothing was tested; 300 s overall by default, then gate: INCOMPLETE (deadline), exit 4)
+//   jefe-gate verify [--deadline <s>] [--since <start|ref>] -- <cmd...> [-- <cmd...>]  all, then each command (no shell, 120 s each): check: PASS|FAIL (<cmd>, exit <n>), then gate: PASS|FAIL
+//                                     (gate: PASS (no tests found, no checks given) when nothing at all was tested)
+//   Child output (tests, checks) is echoed with a "| " prefix on every line; only unprefixed lines are the gate's own.
+//   jefe-gate finish [--since <start|stage|ref>] [--plan job|project] [--stage <n>] [--no-tests] [--deadline <s>] [--goal "<line>"] [--note "<line>" ...] [--commit "<msg>"] [--review pending] [-- <cmd...> ...]
+//                                     the whole end-of-job call: verify, then project + handoff (medium/large or an existing .jefe/; the
+//                                     script WRITES the handoff unless a builder wrote a valid one after start), the job log, the cost
+//                                     line, an optional commit, then exactly one gate: line. --no-tests runs neither tests nor checks.
+//                                     A job or the last stage ends with `report:` and the fixed block tests:, check:, secrets:, review:, commit:, cost:, gate: (lib/gate/report.mjs).
+//   jefe-gate push --review pass      the gate's own push (main session only; needs the git-push kind; pushes only the commit and branch the passing ending finish saw, only to the destination `go` printed as push-to: and recorded, https or ssh only; never force; hooks and the file-system monitor off; refused when the repository's local git configuration holds anything a plain push does not need). No other option.
+//   jefe-gate allow --clear           deactivate the job's approved command kinds (state outside the project)
+//   jefe-gate ask --provider <name> --use <kind> [--model <id>] [--max-out <chars>] [--in <file>] [--timeout <s>] -- "<instruction>"
+//                                     OPTIONAL, off until `jefe-project provider add`: one text-only request to a provider you configured (docs/PROVIDERS.md).
+//                                     The only network call in the plugin (lib/providers/call.mjs). Writes <project>/.jefe/logs/providers.log (no content, no key).
+//   jefe-gate level                   level: <low|medium|high> (source: run|env|project|user|default)
+//   jefe-gate level set <value> [--project]    save the level (user config, or <project>/.jefe/config.json)
+//   jefe-gate level unset [--project]          remove the saved level
+//   jefe-gate knobs [--level <l>]     knobs: key=value ... for the level in effect, then models: (the model each helper role is asked to use, with its source)
+//   jefe-gate start [--level <l>] [--words "<text>"] [--guide]   everything the planner needs at entry, one call (mode:, level:, knobs: first; only lines that carry information); records the start snapshot
+//                                     and prints base: <short sha> [<branch>] (the commit the job starts from). One project named from a folder that is not that project:
+//                                     the three lines root:, resume: cd "<path>" && claude "/jefe:jefe continue <name>", next: tell the user to run the resume line; stop
+//   jefe-gate go --goal "<t>" --done "<t>" [--out "<t>"] [--ref "<t>"] [--answer k=v]... [--pref k=v]... [--branch <slug>] [--name <project name>] [--allow-kind <name>]... [--push-to <url>] [--allow-cmd "<command>"]... [--allow-provider <name>]... [--stage "<title> :: <done when>"]... [--helpers <alias>] [--helper-model <role>=<alias>]...   write .jefe/goal.md and .jefe/plan.md, save prefs, approved command kinds, branch
+//   jefe-gate amend [--goal t] [--done t] [--out t] [--ref t] [--answer k=v]... [--stage "t :: d"]... [--drop-stage n]... [--note why]   change goal.md / plan.md mid-job
+//   Global: --root <path> (any command; the last one wins) acts on that project instead of the cwd. Every Jefe call goes through <root>/.jefe/bin/jefe-gate
+//   (hooks/wrappers.mjs), which passes its own project as --root, so a call from any folder acts on that project.
+//   The job's approved command kinds (go) live until the job is over: finish of a job with no plan or of the last stage (unless --review pending), park, a new go, allow --clear, expiry (12 h). A user prompt does not end them.
+//   jefe-gate park --reason <context|usage>   record that this run is parked (the mod shows PARKED from it), write .jefe/handoff.md, print parked: <reason> and the resume: line
+//   jefe-gate runfile-path            path of the run file for the current project
+//   add --json to any command for machine output.
+//
+// Run file: ${JEFE_HOME:-~/.claude/jefe}/run/<first 16 hex of sha256(project root)>.json (written by the UI mod).
+// Project root: one rule for every caller (hooks/root.mjs; docs/HOW-IT-WORKS.md), after realpath (hooks/runfile.mjs projectRoot, the same function the mod uses). A run file that names a
+// different session than JEFE_SESSION_ID / CLAUDE_SESSION_ID / CLAUDE_CODE_SESSION_ID is ignored.
+// Allowlist: <repo root>/.jefe-gate-allow, one `path` or `path:pattern-name` per line, `#` comments.
+// Env: JEFE_CONTEXT_LIMIT (tokens; default 120000, or 250000 on a window above 200K), JEFE_CONTEXT_PERCENT (default 50 on a window of 200K or less), JEFE_USAGE_GUARD=off (no plan-usage downshift or park).
+
+import { realpathSync } from 'node:fs';
+import { safe } from '../hooks/projects.mjs';
+import { findRoot } from '../hooks/permit-core.mjs';
+import { cmdAllow } from '../lib/gate/allow.mjs';
+import { cmdAmend } from '../lib/gate/amend.mjs';
+import { cmdAsk } from '../lib/providers/ask.mjs';
+import { badOption, optValue, strayWord } from '../lib/gate/args.mjs';
+import { shared } from '../lib/gate/env.mjs';
+import { cmdFinish } from '../lib/gate/finish.mjs';
+import { isDir } from '../lib/gate/fsutil.mjs';
+import { cmdGo } from '../lib/gate/go.mjs';
+import { cmdContextWithLevel, cmdKnobs, cmdLevel } from '../lib/gate/levels.mjs';
+import { cmdPark } from '../lib/gate/park.mjs';
+import { cmdPush } from '../lib/gate/push.mjs';
+import { cmdCost, runFilePath } from '../lib/gate/runfile.mjs';
+import { cmdSecrets } from '../lib/gate/secrets.mjs';
+import { cmdSize } from '../lib/gate/size.mjs';
+import { cmdStart } from '../lib/gate/start.mjs';
+import { cmdTests } from '../lib/gate/tests.mjs';
+import { USAGE } from '../lib/gate/usage.mjs';
+import { versionLine } from '../lib/gate/version.mjs';
+import { cmdAll, cmdVerify } from '../lib/gate/verify.mjs';
+
+async function main() {
+  const argv = process.argv.slice(2);
+  // Gate flags are read only before the first literal --; everything after it belongs to the verify checks verbatim.
+  const dd = argv.indexOf('--');
+  const before = dd === -1 ? argv : argv.slice(0, dd);
+  const json = before.includes('--json');
+  // --root <path> (global, any position before a literal --): act on that project instead of the current folder
+  let rootArg = null;
+  const kept = [];
+  for (let i = 0; i < before.length; i++) {
+    if (before[i] === '--root') rootArg = i + 1 < before.length ? before[++i] : '';
+    else if (before[i] === '--full') shared.fullOutput = true;
+    else if (before[i] !== '--json') kept.push(before[i]);
+  }
+  const args = [...kept, ...(dd === -1 ? [] : argv.slice(dd))];
+  const cmd = args[0];
+  const rest = args.slice(1);
+  if (cmd === '--help' || cmd === '-h' || cmd === 'help') {
+    process.stdout.write(USAGE + '\n');
+    return 0;
+  }
+  if (cmd === '--version' || cmd === '-V') {
+    process.stdout.write(versionLine('jefe-gate') + '\n');
+    return 0;
+  }
+  const table = {
+    size: cmdSize,
+    secrets: cmdSecrets,
+    tests: cmdTests,
+    context: cmdContextWithLevel,
+    level: cmdLevel,
+    knobs: cmdKnobs,
+    start: cmdStart,
+    go: cmdGo,
+    amend: cmdAmend,
+    park: cmdPark,
+    push: cmdPush,
+    cost: cmdCost,
+    all: cmdAll,
+    verify: cmdVerify,
+    finish: cmdFinish,
+    allow: cmdAllow,
+    ask: cmdAsk,
+    'runfile-path': () => ({ lines: [safe(runFilePath())], data: { path: runFilePath() }, code: 0 }),
+  };
+  if (!cmd || !Object.hasOwn(table, cmd)) {
+    process.stderr.write(USAGE + '\n');
+    return 2;
+  }
+  if (rootArg !== null) {
+    try {
+      const dir = realpathSync(rootArg);
+      if (!rootArg || !isDir(dir)) throw new Error('not a folder');
+      process.chdir(dir);
+    } catch {
+      process.stderr.write(`jefe-gate: --root ${safe(rootArg.slice(0, 200))} is not a folder\n`);
+      return 2;
+    }
+  }
+  // the one rule (hooks/root.mjs), from the folder alone
+  shared.root = findRoot(process.cwd());
+  if (shared.root === null) {
+    process.stderr.write('jefe-gate: the project folder cannot be resolved\n');
+    return 2;
+  }
+  // Always work FROM the project root (not only with --root): checks, `git add` and every relative path then mean the same folder the permit hook judged
+  try {
+    process.chdir(shared.root);
+  } catch {
+    process.stderr.write('jefe-gate: the project folder cannot be entered\n');
+    return 2;
+  }
+  const bad = badOption(cmd, rest);
+  if (bad) {
+    process.stderr.write(`jefe-gate: unknown option ${safe(bad.slice(0, 60))} for ${cmd}\n${USAGE}\n`);
+    return 2;
+  }
+  const stray = strayWord(cmd, rest);
+  if (stray !== null) {
+    process.stderr.write(`jefe-gate: unexpected word "${safe(stray.slice(0, 60))}" for ${cmd}: it is not an option or the value of one\n${USAGE}\n`);
+    return 2;
+  }
+  // start runs unattended at skill load: it never reads stdin and every git call in it is bounded
+  if (cmd === 'start') shared.deadline = Date.now() + 5000;
+  if (cmd === 'all' || cmd === 'verify' || cmd === 'finish') {
+    // the whole run has a deadline (default 300 s); --deadline is read before a verify command's literal --
+    const own = cmd !== 'all' && rest.includes('--') ? rest.slice(0, rest.indexOf('--')) : rest;
+    const d = optValue(own, '--deadline');
+    let secs = 300;
+    if (d !== null) {
+      secs = Number(d);
+      if (!(secs > 0) || !Number.isFinite(secs)) {
+        process.stdout.write('gate: bad --deadline value\n');
+        return 2;
+      }
+    }
+    shared.deadline = Date.now() + secs * 1000;
+  }
+  const r = await table[cmd](rest);
+  process.stdout.write(json ? JSON.stringify({ ...r.data, exit: r.code }) + '\n' : r.lines.join('\n') + '\n');
+  return r.code;
+}
+
+// No command ever prints a stack trace: one clear line, exit 3.
+const crash = (err) => {
+  process.stderr.write(`jefe-gate: unexpected error: ${safe(err && err.message ? err.message : err)}\n`);
+  process.exit(3);
+};
+process.on('uncaughtException', crash);
+main().then((code) => process.exit(code), crash);

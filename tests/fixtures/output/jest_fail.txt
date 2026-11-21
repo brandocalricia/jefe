@@ -1,0 +1,39 @@
+FAIL src/cart.test.js
+  Cart
+    ✓ starts empty (2 ms)
+    ✕ adds an item (5 ms)
+    ✕ applies a discount (3 ms)
+
+  ● Cart › adds an item
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 1
+
+      5 | test('adds an item', () => {
+      6 |   cart.add('a');
+    > 7 |   expect(cart.count()).toBe(2);
+        |                        ^
+      8 | });
+
+      at Object.<anonymous> (src/cart.test.js:7:24)
+      at Promise.then.completed (node_modules/jest-circus/build/utils.js:298:28)
+      at new Promise (<anonymous>)
+      at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:231:10)
+
+  ● Cart › applies a discount
+
+    TypeError: cart.discount is not a function
+
+      11 | test('applies a discount', () => {
+    > 12 |   cart.discount(10);
+         |        ^
+      at Object.<anonymous> (src/cart.test.js:12:8)
+      at Promise.then.completed (node_modules/jest-circus/build/utils.js:298:28)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 1 passed, 3 total
+Snapshots:   0 total
+Time:        1.234 s
+Ran all test suites.

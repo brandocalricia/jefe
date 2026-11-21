@@ -1,0 +1,560 @@
+#!/usr/bin/env node
+// jefe-project: project name -> path registry and handoff checker. No dependencies.
+//
+//   jefe-project resolve <name> [--create] [--force-new]   prints {"name","path","exists","handoff"}
+//       --create refuses (exit 3) when the current folder or a parent already has .jefe/; --force-new bypasses that
+//   jefe-project here                        prints {"path","name","handoff"} for the current folder (searching parents); exit 0 always
+//   jefe-project register <name> <path>      records name -> path for THIS host
+//   jefe-project unregister <name>           removes name (exact, not an alias) from THIS host's map and from projects.json, and the project's
+//                                            run files (<jefe home>/run/<key>.json, .gate.json, .level.json, .name, .commits.json, .checks.json, .allow.json, .brief, .report.json, .task-failed.json; the JSON lists them in runFiles);
+//                                            the folder is never touched. Exit 1 when the name is not registered.
+//   jefe-project list                        prints this host's projects (names, paths, aliases, exists) as JSON
+//   jefe-project find [--json] <free text...>   loose match against names and aliases, exit 0 even with none. An exact name or alias
+//                                            (any case) is the only result; partial matches are listed only when there is no exact one.
+//                                            Prints JSON, except: not in a terminal, without --json, and ONE clear project in another folder
+//                                            than this one prints exactly three lines: `root: <path>`, `resume: cd "<path>" && claude
+//                                            "/jefe:jefe continue <name>"`, `next: tell the user to run the resume line; stop`.
+//   jefe-project alias <name> <alias>        adds an alias (spaces allowed); aliases/unalias list and remove
+//   jefe-project aliases <name>
+//   jefe-project unalias <name> <alias>
+//   jefe-project init [<path>]               creates <path>/.jefe/ (with a .gitignore of "*") for an existing folder (default: the
+//                                            current folder) and prints {"path","jefe","gitignore","name"}; name is the folder name
+//                                            as a valid project name (slug), ready for register. Registers nothing.
+//   jefe-project slug "<text>"               prints the text as a valid project name: lowercase, runs of other characters to "-"
+//                                            ("My Project" -> my-project)
+//   jefe-project handoff-check <file>        exit 1 if over 350 words or headings missing
+//   jefe-project prefs get [<root>]          prints the project's standing answers as JSON (<root>/.jefe/prefs.json)
+//   jefe-project prefs set <key> <value> [<root>]   saves one (key: letters, digits, dash, underscore; value up to 200 characters; mode 0600)
+//   jefe-project provider add <name> --base-url <url> [--key-env <VAR>] --model <id>... [--use <kind>]... [--trusted] [--paid] [--replace]
+//   jefe-project provider add openrouter [--model <id>]... [--use <kind>]... [--trusted] [--paid] [--replace]
+//   jefe-project provider list | remove <name> | test <name>
+//                                            optional text-only providers for `jefe-gate ask` (docs/PROVIDERS.md); <registry home>/providers.json holds
+//                                            names and the NAME of the key variable, never a key. The key variable of a custom provider must start with
+//                                            JEFE_PROVIDER_ (default JEFE_PROVIDER_<NAME>_KEY); only the built-in openrouter uses OPENROUTER_API_KEY, pinned to
+//                                            its own host. add on an existing name with the same host and key variable updates it (models, uses, trusted,
+//                                            paid) without --replace; a different host or key variable needs --replace. --paid allows non-:free OpenRouter
+//                                            models. `provider test` sends one tiny request. The permit hook never approves add, remove or test; `list` is a read.
+//
+//   Global: --root <path> (any command, any position) runs it as if started in that folder; the project's wrapper
+//   <root>/.jefe/bin/jefe-project passes its own folder, so a call from any folder means that project.
+//
+// Registry: ${JEFE_HOME:-~/.claude/jefe}/hosts/<host>.json  (name -> path, one file per host,
+// each machine writes only its own) and projects.json (names and aliases).
+// Host: JEFE_HOST when it is a valid host name, else `hostname -s` cleaned (hooks/projects.mjs hostName). Projects live in ${JEFE_PROJECTS_DIR:-~/projects}.
+// find, resolve and start's matches skip entries whose folder no longer exists and scratch projects under the temp folder untouched for 24 h; list still shows them (MISSING).
+// Every command that changes the registry (register, unregister, resolve --create, alias, unalias) holds a lock file
+// (<JEFE_HOME>/.registry.lock) and re-reads the files inside it, so parallel calls never lose an entry.
+
+import { copyFileSync, existsSync, lstatSync, readFileSync, realpathSync, statSync, unlinkSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
+import { cwdProject, elsewhereLines, elsewhereTarget, ensurePrivateDir, findMatches, hereInfo, hostName, isSymlink, nameConflict, own, readPrefs, safe, setPref, slugify, squash, withLock, writePrivate } from '../hooks/projects.mjs';
+import { realOf, registryHome, RUN_SUFFIXES } from '../hooks/approvals-state.mjs';
+import { runKey } from '../hooks/runfile.mjs';
+import { findRoot } from '../hooks/permit-core.mjs';
+import { versionLine } from '../lib/gate/version.mjs';
+import { cmdProvider } from '../lib/providers/cli.mjs';
+import { basename, join, resolve } from 'node:path';
+
+export const MAX_WORDS = 350;
+export const HEADINGS = ['Goal', 'DONE WHEN (state)', 'Last done', 'Next', 'Open decisions', 'Key paths'];
+
+// The registry home for the folder this runs in (after --root): the current project root decides, by the same rule as the gate, so a JEFE_HOME
+// that a repository's settings point inside that project is neither read nor written (the default is used instead).
+const home = () => registryHome(findRoot(process.cwd()) || resolve('.'));
+const projectsDir = () => process.env.JEFE_PROJECTS_DIR || join(homedir(), 'projects');
+
+const host = () => hostName();
+
+export const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+
+function die(msg, code = 1) {
+  process.stderr.write(`jefe-project: ${safe(msg)}\n`);
+  process.exit(code);
+}
+
+// A missing file is the fallback. A file that exists but is not valid JSON is never
+// overwritten: it is copied to <file>.corrupt-<timestamp> and the command stops.
+function readJson(file, fallback) {
+  let text;
+  try {
+    text = readFileSync(file, 'utf8');
+  } catch (err) {
+    if (err && err.code === 'ENOENT') return fallback;
+    die(`cannot read ${file}: ${err.code || err.message}`);
+  }
+  try {
+    const v = JSON.parse(text);
+    if (v === null || typeof v !== 'object' || Array.isArray(v)) throw new Error('not a JSON object');
+    return v;
+  } catch (err) {
+    const copy = `${file}.corrupt-${new Date().toISOString().replace(/[:.]/g, '-')}`;
+    try {
+      copyFileSync(file, copy);
+    } catch {
+      // the message below still stops the command
+    }
+    die(`${file} is not valid JSON (${err.message}). A copy was saved to ${copy}. Fix or remove ${file}, then run again. Nothing was overwritten.`);
+  }
+}
+
+function writeJson(file, value) {
+  try {
+    writePrivate(file, JSON.stringify(value, null, 2) + '\n', { guardDir: true }); // atomic, 0600, never through a symlink
+  } catch (err) {
+    die(err && err.code === 'ESYMLINK' ? err.message : `cannot write ${file}: ${(err && (err.code || err.message)) || err}`);
+  }
+}
+
+// The projects map of a registry object; {} when it is missing or not an object.
+const projectsOf = (reg) => {
+  const p = reg && typeof reg === 'object' ? own(reg, 'projects') : undefined;
+  return p && typeof p === 'object' && !Array.isArray(p) ? p : {};
+};
+const aliasesOfEntry = (projects, name) => {
+  const a = own(own(projects, name), 'aliases');
+  return Array.isArray(a) ? a : [];
+};
+
+function validName(name) {
+  if (typeof name !== 'string' || !NAME_RE.test(name) || name.includes('..')) {
+    die(`invalid project name "${name}": use letters, digits, dot, underscore or hyphen, starting with a letter or digit (no slashes, spaces or ".."). Suggested: ${slugify(name)} (jefe-project slug "<text>" makes one)`, 2);
+  }
+  return name;
+}
+
+// Creates <path>/.jefe/ and a .gitignore of "*" inside it so it is never committed by accident.
+function ensureJefeDir(path) {
+  const dir = join(path, '.jefe');
+  const ignore = join(dir, '.gitignore');
+  if (isSymlink(dir)) die(`refusing to write: ${dir} is a symlink`);
+  if (isSymlink(ignore)) die(`refusing to write: ${ignore} is a symlink`);
+  ensurePrivateDir(dir);
+  if (!existsSync(ignore)) writePrivate(ignore, '*\n');
+  return dir;
+}
+
+// Runs fn holding the registry lock; a lock that cannot be taken stops the command with one clear line.
+function locked(fn) {
+  try {
+    return withLock(join(home(), '.registry'), fn);
+  } catch (err) {
+    if (err && err.code === 'ELOCK') die(err.message);
+    throw err;
+  }
+}
+
+const hostFile = () => join(home(), 'hosts', `${host()}.json`);
+const registryFile = () => join(home(), 'projects.json');
+
+function canonical(name) {
+  const projects = projectsOf(readJson(registryFile(), { projects: {} }));
+  if (own(projects, name)) return name;
+  const want = String(name).trim().toLowerCase();
+  for (const n of Object.keys(projects)) {
+    if (aliasesOfEntry(projects, n).some((a) => String(a).toLowerCase() === want)) return n;
+  }
+  return name;
+}
+
+// A registered alias (any case, spaces allowed) or null.
+function aliasTarget(text) {
+  const c = canonical(text);
+  return c !== text || own(projectsOf(readJson(registryFile(), { projects: {} })), text) ? c : null;
+}
+
+function register(name, path) {
+  const abs = resolve(path);
+  return locked(() => {
+    const map = readJson(hostFile(), {});
+    // the same rule the gate's project step uses to pick a free name (nameConflict): a name never shadows another project's name or alias
+    const taken = nameConflict(name, abs, map, projectsOf(readJson(registryFile(), { projects: {} })));
+    if (taken && taken.kind === 'alias') die(`name "${name}" collides with an alias of project "${taken.other}"`);
+    if (taken && taken.kind === 'name') die(`name "${name}" collides with the project name "${taken.other}"`);
+    if (taken) die(`name "${name}" is already registered to ${taken.path}; run: jefe-project unregister ${name}  first`);
+    map[name] = abs;
+    writeJson(hostFile(), map);
+    const reg = readJson(registryFile(), { projects: {} });
+    if (!own(reg, 'projects') || typeof reg.projects !== 'object' || Array.isArray(reg.projects)) reg.projects = {};
+    if (!own(reg.projects, name)) reg.projects[name] = { aliases: [] };
+    writeJson(registryFile(), reg);
+    return abs;
+  });
+}
+
+function describe(name, path) {
+  return { name, path, exists: existsSync(path), handoff: join(path, '.jefe', 'handoff.md') };
+}
+
+function cmdResolve(args) {
+  const create = args.includes('--create');
+  const forceNew = args.includes('--force-new');
+  const words = args.filter((a) => !a.startsWith('--'));
+  const raw = words.join(' ');
+  if (!raw) die('usage: resolve <name> [--create]', 2);
+  if (create && !forceNew) {
+    const here = cwdProject(readJson(hostFile(), {}));
+    if (here) {
+      process.stderr.write(here.name
+        ? `current folder already is a Jefe project (${here.path}), already registered as "${here.name}"; use: jefe-project resolve "${here.name}"\n`
+        : `current folder already is a Jefe project (${here.path}); use: jefe-project register <name> <path>\n`);
+      process.exit(3);
+    }
+  }
+  const viaAlias = words.length >= 1 ? aliasTarget(raw) : null;
+  if (!viaAlias) validName(raw);
+  const name = validName(viaAlias || canonical(raw));
+  const map = readJson(hostFile(), {});
+  let path = own(map, name);
+  if (typeof path !== 'string') path = undefined;
+  const stale = path && !existsSync(path) ? path : null; // a registered folder that is gone is never offered
+  if (stale) path = undefined;
+  if (!path) {
+    const guess = join(projectsDir(), name);
+    if (existsSync(guess) && statSync(guess).isDirectory()) path = guess;
+  }
+  if (!path) {
+    if (!create) {
+      die(`project "${raw}" not found on host "${host()}"${stale ? ` (registered at ${stale}, which no longer exists; remove it with: jefe-project unregister ${name})` : ''}. Looked in ${hostFile()} and ${join(projectsDir(), name)}. Run with --create or: jefe-project register ${raw} <path>`);
+    }
+    path = join(projectsDir(), name);
+    ensureJefeDir(path);
+    register(name, path);
+  } else if (create) {
+    ensureJefeDir(path);
+    if (!own(map, name)) register(name, path);
+  }
+  process.stdout.write(JSON.stringify(describe(name, path)) + '\n');
+}
+
+function cmdRegister(args) {
+  const allowMissing = args.includes('--allow-missing');
+  const [name, path] = args.filter((a) => a !== '--allow-missing');
+  if (!name || !path) die('usage: register <name> <path> [--allow-missing]', 2);
+  validName(name);
+  if (!allowMissing && !existsSync(resolve(path))) die(`path does not exist: ${path}`);
+  const abs = register(name, path);
+  process.stdout.write(JSON.stringify(describe(name, abs)) + '\n');
+}
+
+// The run files this plugin writes for a project folder, in <jefe home>/run: <key>.json (the mod's run file), <key>.gate.json and
+// <key>.level.json (written by jefe-gate start), <key>.name (go --name), <key>.commits.json (stage commits) and the approvals' <key>.allow.json and <key>.checks.json. The key is the hash of the folder's real path (hooks/runfile.mjs). Removes the
+// regular ones that exist (never a symlink, never any other file) and returns their names.
+function removeRunFiles(path) {
+  const folders = [resolve(path)];
+  try {
+    folders.push(realpathSync(path));
+  } catch {
+    // a folder that is gone has only its registered spelling
+  }
+  const removed = [];
+  for (const key of new Set(folders.map((f) => runKey(f)))) {
+    for (const suffix of RUN_SUFFIXES) {
+      const file = join(home(), 'run', key + suffix);
+      try {
+        if (!lstatSync(file).isFile()) continue;
+        unlinkSync(file);
+        removed.push(key + suffix);
+      } catch {
+        // not there, or not ours to remove
+      }
+    }
+  }
+  return removed;
+}
+
+// Removes a name from this host's map and from the shared names file, under the registry lock, and the project's run files
+// (prints their names). Never touches the folder.
+function cmdUnregister(args) {
+  if (args.length !== 1) die('usage: unregister <name>', 2);
+  const name = validName(args[0]);
+  const removed = locked(() => {
+    const map = readJson(hostFile(), {});
+    const reg = readJson(registryFile(), { projects: {} });
+    const projects = projectsOf(reg);
+    const inHost = own(map, name) !== undefined;
+    const inReg = own(projects, name) !== undefined;
+    if (!inHost && !inReg) return null;
+    let runFiles = [];
+    if (inHost) {
+      const shared = Object.entries(map).some(([n, p]) => n !== name && p === map[name]); // another name for the same folder keeps its run files
+      if (typeof map[name] === 'string' && !shared) runFiles = removeRunFiles(map[name]);
+      delete map[name];
+      writeJson(hostFile(), map);
+    }
+    if (inReg) {
+      delete projects[name];
+      reg.projects = projects;
+      writeJson(registryFile(), reg);
+    }
+    return { host: inHost, names: inReg, runFiles };
+  });
+  if (!removed) die(`project "${name}" is not registered (nothing removed). See: jefe-project list`);
+  process.stdout.write(JSON.stringify({ name, removed: true, fromHost: removed.host, fromNames: removed.names, runFiles: removed.runFiles }) + '\n');
+}
+
+function cmdInit(args) {
+  const raw = args.find((a) => !a.startsWith('--')) || '.';
+  const abs = resolve(raw);
+  if (!existsSync(abs) || !statSync(abs).isDirectory()) die(`${abs} is not an existing folder`);
+  ensureJefeDir(abs);
+  process.stdout.write(JSON.stringify({ path: abs, jefe: join(abs, '.jefe'), gitignore: join(abs, '.jefe', '.gitignore'), name: slugify(basename(abs)) }) + '\n');
+}
+
+function cmdSlug(args) {
+  const text = args.join(' ');
+  if (!text.trim()) die('usage: slug "<text>"', 2);
+  process.stdout.write(slugify(text) + '\n');
+}
+
+// JSON when piped or with --json; a short table when stdout is a terminal.
+const wantTable = (args) => !args.includes('--json') && process.stdout.isTTY === true;
+
+function table(rows, cols) {
+  const cells = rows.map((r) => cols.map((c) => safe(r[c] === undefined || r[c] === null ? '' : Array.isArray(r[c]) ? r[c].join(', ') : String(r[c]))));
+  const width = cols.map((c, i) => Math.max(c.length, ...cells.map((r) => r[i].length)));
+  const line = (r) => r.map((v, i) => v.padEnd(width[i])).join('  ').trimEnd();
+  return [line(cols), ...cells.map(line)].join('\n') + '\n';
+}
+
+function cmdList(args = []) {
+  const map = readJson(hostFile(), {});
+  const reg = readJson(registryFile(), { projects: {} });
+  const out = Object.entries(map).filter(([, path]) => typeof path === 'string').map(([name, path]) => ({
+    ...describe(name, path),
+    aliases: aliasesOfEntry(projectsOf(reg), name),
+  }));
+  if (wantTable(args)) {
+    process.stdout.write(out.length ? table(out.map((o) => ({ ...o, exists: o.exists ? 'yes' : 'MISSING' })), ['name', 'path', 'exists', 'aliases']) : `no projects registered on host "${safe(host())}"\n`);
+    return;
+  }
+  process.stdout.write(JSON.stringify({ host: host(), projects: out }, null, 2) + '\n');
+}
+
+export function checkHandoff(text) {
+  const problems = [];
+  const words = text.split(/\s+/).filter(Boolean).length;
+  if (words > MAX_WORDS) problems.push(`${words} words, limit is ${MAX_WORDS}`);
+  // heading text without a regex over the whole line: a hostile file of long space runs cannot stall it
+  const found = [];
+  for (const l of text.split('\n')) {
+    const m = /^#{1,6}[ \t]/.exec(l.slice(0, 400));
+    if (!m) continue;
+    let t = l.slice(m[0].length, 400);
+    let end = t.length;
+    while (end > 0 && /[#\s]/.test(t[end - 1])) end--;
+    found.push(t.slice(0, end).trim());
+  }
+  for (const h of HEADINGS) {
+    if (!found.includes(h)) problems.push(`missing heading "${h}"`);
+  }
+  // An optional line starting "Gate:" is allowed and not counted as an error.
+  return { words, problems };
+}
+
+function cmdHandoffCheck(args) {
+  const file = args[0];
+  if (!file) die('usage: handoff-check <file>', 2);
+  let text;
+  try {
+    text = readFileSync(file, 'utf8');
+  } catch (err) {
+    die(`cannot read ${file}: ${err.code || err.message}`);
+  }
+  const { words, problems } = checkHandoff(text);
+  if (problems.length) die(`${file}: ${problems.join('; ')}`);
+  process.stdout.write(`ok: ${words} words, all headings present\n`);
+}
+
+// ---- loose matching: lives in hooks/projects.mjs ----
+
+function cmdHere() {
+  process.stdout.write(JSON.stringify(hereInfo()) + '\n');
+}
+
+// A project under the system temp folder whose newest Jefe file or folder is older than 24 hours: a stale scratch project (never deleted, only not offered).
+function staleScratch(p) {
+  try {
+    const real = realpathSync(p);
+    const tmps = [...new Set([tmpdir(), '/tmp', '/private/tmp'].map((t) => { try { return realpathSync(t); } catch { return t; } }))];
+    if (!tmps.some((t) => real === t || real.startsWith(t + '/'))) return false;
+    let newest = 0;
+    for (const f of [real, join(real, '.jefe'), join(real, '.jefe', 'handoff.md'), join(real, '.jefe', 'log.md'), join(real, '.jefe', 'plan.md')]) {
+      try { newest = Math.max(newest, statSync(f).mtimeMs); } catch { /* absent */ }
+    }
+    return Date.now() - newest > 24 * 3600 * 1000;
+  } catch {
+    return false;
+  }
+}
+
+function cmdFind(args) {
+  const json = !wantTable(args);
+  const query = args.filter((a) => a !== '--json').join(' ');
+  if (!query.trim()) die('find: usage: jefe-project find [--json] <the words that name the project>', 2);
+  const map = readJson(hostFile(), {});
+  const reg = readJson(registryFile(), { projects: {} });
+  const aliasesOf = (n) => aliasesOfEntry(projectsOf(reg), n);
+  const present = Object.fromEntries(Object.entries(map).filter(([, p]) => typeof p === 'string' && existsSync(p) && !staleScratch(p))); // a gone folder, or a scratch project in the temp folder untouched for 24 h, is never a match
+  const matches = findMatches(query, present, aliasesOf);
+  if (json && !args.includes('--json')) {
+    // three lines only when the words are exactly one OTHER project's name or alias (after an optional continue/resume), or start with continue/resume and have one clear match
+    const win = elsewhereTarget(query, matches, aliasesOf, [process.cwd(), (cwdProject(map) || {}).path]);
+    if (win) {
+      process.stdout.write(elsewhereLines(win.path, win.name).join('\n') + '\n');
+      return;
+    }
+  }
+  // no match, no --json: plain words (what is registered and the command that lists it); JSON only with --json
+  const none = () => {
+    const names = Object.keys(map).sort();
+    const shown = names.slice(0, 20).map((n) => safe(n)).join(', ') + (names.length > 20 ? `, ... (${names.length} in all)` : '');
+    process.stdout.write(`no project matches "${safe(query.slice(0, 80))}"; registered: ${names.length ? shown : 'none'} (jefe-project list)\n`);
+  };
+  if (!json) {
+    if (matches.length) process.stdout.write(table(matches.map((m) => ({ ...m, exists: m.exists ? 'yes' : 'MISSING' })), ['name', 'score', 'via', 'path', 'exists']));
+    else none();
+    return;
+  }
+  if (!matches.length && !args.includes('--json')) return none();
+  process.stdout.write(JSON.stringify({ query, matches, cwdProject: cwdProject(map) }) + '\n');
+}
+
+export const ALIAS_RE = /^[A-Za-z0-9][A-Za-z0-9 ._'-]*$/;
+
+function validAlias(a) {
+  if (typeof a !== 'string' || a.length > 40 || !ALIAS_RE.test(a) || a.includes('..') || a !== a.trim()) {
+    die(`invalid alias "${a}": use letters, digits, space, dot, underscore, hyphen or apostrophe, starting with a letter or digit (max 40, no "..")`, 2);
+  }
+  return a;
+}
+
+function knownName(raw) {
+  const name = validName(canonical(raw));
+  const map = readJson(hostFile(), {});
+  const reg = readJson(registryFile(), { projects: {} });
+  if (!own(map, name) && !own(projectsOf(reg), name)) die(`project "${raw}" is not registered. Run: jefe-project register ${raw} <path>`);
+  return { name, reg };
+}
+
+// check-name <name> <path>: is the name free for that folder? (the gate's project step asks before it registers; same rule as register)
+function cmdCheckName(args) {
+  if (args.length !== 2) die('usage: check-name <name> <path>', 2);
+  validName(args[0]);
+  const taken = nameConflict(args[0], resolve(args[1]), readJson(hostFile(), {}), projectsOf(readJson(registryFile(), { projects: {} })));
+  process.stdout.write(JSON.stringify({ name: args[0], taken }) + '\n');
+}
+
+function cmdAlias(args) {
+  if (args.length !== 2) die('usage: alias <name> <alias>', 2);
+  locked(() => aliasLocked(args));
+}
+
+function aliasLocked(args) {
+  const { name, reg } = knownName(args[0]);
+  const alias = validAlias(args[1]);
+  const key = squash(alias);
+  const projects = (reg.projects = projectsOf(reg));
+  const map = readJson(hostFile(), {});
+  for (const n of new Set([...Object.keys(projects), ...Object.keys(map)])) {
+    const mine = n === name;
+    if (squash(n) === key) die(`alias "${alias}" collides with the project name "${n}"`);
+    if (!mine) {
+      const others = aliasesOfEntry(projects, n);
+      if (others.some((o) => squash(o) === key)) die(`alias "${alias}" collides with an alias of project "${n}"`);
+    }
+  }
+  if (!own(projects, name) || typeof projects[name] !== 'object' || projects[name] === null) projects[name] = { aliases: [] };
+  const list = aliasesOfEntry(projects, name);
+  if (!list.some((o) => squash(o) === key)) list.push(alias);
+  projects[name].aliases = list;
+  writeJson(registryFile(), reg);
+  process.stdout.write(JSON.stringify({ name, aliases: list }) + '\n');
+}
+
+function cmdAliases(args) {
+  if (args.length !== 1) die('usage: aliases <name>', 2);
+  const { name, reg } = knownName(args[0]);
+  const list = aliasesOfEntry(projectsOf(reg), name);
+  process.stdout.write(JSON.stringify({ name, aliases: list }) + '\n');
+}
+
+function cmdUnalias(args) {
+  if (args.length !== 2) die('usage: unalias <name> <alias>', 2);
+  locked(() => unaliasLocked(args));
+}
+
+function unaliasLocked(args) {
+  const { name, reg } = knownName(args[0]);
+  const key = squash(args[1]);
+  const p = own(projectsOf(reg), name);
+  const before = aliasesOfEntry(projectsOf(reg), name);
+  const list = before.filter((o) => squash(o) !== key);
+  if (p && typeof p === 'object') p.aliases = list;
+  if (list.length !== before.length) writeJson(registryFile(), reg);
+  process.stdout.write(JSON.stringify({ name, aliases: list, removed: before.length - list.length }) + '\n');
+}
+
+// prefs get [<root>] | prefs set <key> <value> [<root>]. The root defaults to the project root of this folder.
+async function cmdPrefs(args) {
+  const [sub, ...more] = args;
+  if (sub !== 'get' && sub !== 'set') die('usage: prefs get [<root>] | prefs set <key> <value> [<root>]', 2);
+  const need = sub === 'get' ? 0 : 2;
+  if (more.length < need || more.length > need + 1) die(sub === 'get' ? 'usage: prefs get [<root>]' : 'usage: prefs set <key> <value> [<root>]', 2);
+  const rootArg = more[need];
+  const root = rootArg ? resolve(rootArg) : findRoot(process.cwd()) || resolve('.');
+  if (!existsSync(root) || !statSync(root).isDirectory()) die(`${root} is not an existing folder`);
+  if (sub === 'get') {
+    process.stdout.write(JSON.stringify(readPrefs(root)) + '\n');
+    return;
+  }
+  const r = setPref(root, more[0], more[1]);
+  if (!r.ok) die(r.error, 2);
+  process.stdout.write(JSON.stringify(r.prefs) + '\n');
+}
+
+async function cmdProviderOut(args) {
+  const r = await cmdProvider(args);
+  (r.code ? process.stderr : process.stdout).write(r.lines.flatMap((l) => l.split('\n')).map(safe).join('\n') + '\n');
+  if (r.code) process.exit(r.code);
+}
+
+const USAGE = 'usage: jefe-project [--root <path>] [--version] resolve|register|unregister|init|slug|list|find|here|alias|aliases|unalias|prefs|provider|handoff-check ...';
+const FLAGS = { resolve: ['--create', '--force-new'], register: ['--allow-missing'], provider: ['--base-url', '--key-env', '--model', '--use', '--trusted', '--paid', '--replace'], list: ['--json'], find: ['--json'] };
+// --root <path> (global, any position; the last one wins) runs the command as if started in that folder: `here`, `init`, `prefs` and the
+// "current project" parts of find and resolve --create then mean that project. The project's own wrapper passes its folder this way.
+// Relative paths in the other arguments then resolve against that folder.
+let rootArg = null;
+const argv = [];
+const given = process.argv.slice(2);
+for (let i = 0; i < given.length; i++) {
+  if (given[i] === '--root') rootArg = i + 1 < given.length ? given[++i] : '';
+  else argv.push(given[i]);
+}
+if (rootArg !== null) {
+  try {
+    const dir = realpathSync(rootArg);
+    if (!rootArg || !statSync(dir).isDirectory()) throw new Error('not a folder');
+    process.chdir(dir);
+  } catch {
+    die(`--root ${rootArg.slice(0, 200)} is not a folder`, 2);
+  }
+}
+const [cmd, ...rest] = argv;
+if (cmd === '--help' || cmd === '-h' || cmd === 'help') {
+  process.stdout.write(USAGE + '\n');
+  process.exit(0);
+}
+if (cmd === '--version' || cmd === '-V') {
+  process.stdout.write(versionLine('jefe-project') + '\n');
+  process.exit(0);
+}
+const cmds = { resolve: cmdResolve, register: cmdRegister, unregister: cmdUnregister, init: cmdInit, slug: cmdSlug, list: cmdList, find: cmdFind, here: cmdHere, alias: cmdAlias, aliases: cmdAliases, 'check-name': cmdCheckName, unalias: cmdUnalias, 'handoff-check': cmdHandoffCheck, prefs: cmdPrefs, provider: cmdProviderOut };
+if (!cmd || !Object.hasOwn(cmds, cmd)) die(USAGE, 2);
+const badFlag = rest.find((a) => a.startsWith('--') && !(FLAGS[cmd] || []).includes(a));
+if (badFlag) die(`unknown option ${badFlag} for ${cmd}\n${USAGE}`, 2);
+process.on('uncaughtException', (err) => die(`unexpected error: ${(err && err.message) || err}`));
+try {
+  await cmds[cmd](rest);
+} catch (err) {
+  die(`unexpected error: ${(err && err.message) || err}`);
+}

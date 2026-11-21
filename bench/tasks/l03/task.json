@@ -1,0 +1,1 @@
+{ "id": "l03", "size": "large", "split": "dev", "language": "node", "summary": "template filters plus README: documented examples are executed by a test", "test": ["node", "--test"], "expectedFiles": 3 }

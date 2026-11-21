@@ -1,0 +1,1 @@
+{ "id": "l01", "size": "large", "split": "dev", "language": "node", "summary": "schema validation library: ten modules that must share one result and issue contract", "test": ["node", "--test"], "expectedFiles": 10 }

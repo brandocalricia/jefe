@@ -1,0 +1,17 @@
+.jefe/
+node_modules/
+bench/out/
+bench/results/
+bench/output/
+*.log
+.DS_Store
+__pycache__/
+*.pyc
+scripts/preview/out/
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+assets/demo/demo.cast
+assets/demo/demo.gif

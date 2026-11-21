@@ -1,0 +1,10 @@
+{
+  "name": "ledgerly",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Import bank CSVs, categorise transactions, and report on monthly budgets",
+  "bin": { "ledgerly": "bin/ledgerly.mjs" },
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test" }
+}

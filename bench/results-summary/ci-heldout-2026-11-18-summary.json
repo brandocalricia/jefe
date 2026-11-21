@@ -1,0 +1,367 @@
+{
+  "source": "bench/results/ci-heldout-2026-11-18.json (git-ignored raw data; not committed)",
+  "date": "2026-11-18T21:33:32.502Z",
+  "claudeVersion": "2.1.327 (Claude Code)",
+  "skillSha256": "de1c0f5212752d86deb658b80af4a8195eed5bc45e2352402873de30c16aa54f",
+  "pluginTreeSha256": "779dacc0ce17f4ac4c5085dc66e93839f440f5bda7884c07c67e321c7a9dacf5",
+  "seed": 2484095944,
+  "mode": "standard",
+  "split": "explicit",
+  "trialsPerCell": 1,
+  "note": "Cost is API-equivalent and approximate (Claude Code's own total_cost_usd). Fewer than three trials per cell: a direction, not a rate. costPerPassedTaskUSD is total cost of all runs divided by runs that passed.",
+  "costNote": null,
+  "cells": [
+    {
+      "size": "job",
+      "arm": "jefe-fable-normal",
+      "n": 2,
+      "tasks": 2,
+      "trials": 1,
+      "pass": 2,
+      "meanUSD": 0.49035945000000014,
+      "medianUSD": 0.49035945000000014,
+      "minUSD": 0.4878856000000001,
+      "maxUSD": 0.49283330000000014,
+      "perPassedUSD": 0.49035945000000014,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "job",
+      "arm": "top",
+      "n": 2,
+      "tasks": 2,
+      "trials": 1,
+      "pass": 2,
+      "meanUSD": 0.7701876000000001,
+      "medianUSD": 0.7701876000000001,
+      "minUSD": 0.5997664,
+      "maxUSD": 0.9406088,
+      "perPassedUSD": 0.7701876000000001,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "medium",
+      "arm": "jefe-fable-normal",
+      "n": 1,
+      "tasks": 1,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 0.4878856000000001,
+      "medianUSD": 0.4878856000000001,
+      "minUSD": 0.4878856000000001,
+      "maxUSD": 0.4878856000000001,
+      "perPassedUSD": 0.4878856000000001,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "medium",
+      "arm": "top",
+      "n": 1,
+      "tasks": 1,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 0.5997664,
+      "medianUSD": 0.5997664,
+      "minUSD": 0.5997664,
+      "maxUSD": 0.5997664,
+      "perPassedUSD": 0.5997664,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "large",
+      "arm": "jefe-fable-normal",
+      "n": 1,
+      "tasks": 1,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 0.49283330000000014,
+      "medianUSD": 0.49283330000000014,
+      "minUSD": 0.49283330000000014,
+      "maxUSD": 0.49283330000000014,
+      "perPassedUSD": 0.49283330000000014,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "large",
+      "arm": "top",
+      "n": 1,
+      "tasks": 1,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 0.9406088,
+      "medianUSD": 0.9406088,
+      "minUSD": 0.9406088,
+      "maxUSD": 0.9406088,
+      "perPassedUSD": 0.9406088,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "project",
+      "arm": "jefe-fable-normal",
+      "n": 2,
+      "tasks": 2,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 2.4939068499999997,
+      "medianUSD": 2.4939068499999997,
+      "minUSD": 1.7549925,
+      "maxUSD": 3.2328211999999996,
+      "perPassedUSD": 4.987813699999999,
+      "costKnown": true,
+      "partsMean": 0.9,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "project",
+      "arm": "top",
+      "n": 2,
+      "tasks": 2,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 4.7546966,
+      "medianUSD": 4.7546966,
+      "minUSD": 3.1576678,
+      "maxUSD": 6.351725399999999,
+      "perPassedUSD": 9.5093932,
+      "costKnown": true,
+      "partsMean": 0.9,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "small",
+      "arm": "jefe-fable-normal",
+      "n": 1,
+      "tasks": 1,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 0.4848923999999998,
+      "medianUSD": 0.4848923999999998,
+      "minUSD": 0.4848923999999998,
+      "maxUSD": 0.4848923999999998,
+      "perPassedUSD": 0.4848923999999998,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    },
+    {
+      "size": "small",
+      "arm": "top",
+      "n": 1,
+      "tasks": 1,
+      "trials": 1,
+      "pass": 1,
+      "meanUSD": 0.3177794,
+      "medianUSD": 0.3177794,
+      "minUSD": 0.3177794,
+      "maxUSD": 0.3177794,
+      "perPassedUSD": 0.3177794,
+      "costKnown": true,
+      "partsMean": null,
+      "note": "n<3: direction only"
+    }
+  ],
+  "paired": [
+    {
+      "group": "fable",
+      "arm": "jefe-fable-normal",
+      "baseline": "top",
+      "scope": "job",
+      "tasks": 2,
+      "cheaper": 2,
+      "dearer": 0,
+      "ties": 0,
+      "signTestP": 0.25,
+      "meanCostPct": -33.129461197273486,
+      "ciLoPct": -47.60485974615588,
+      "ciHiPct": -18.654062648391097,
+      "meanPassDiffPoints": 0,
+      "minTrials": 1,
+      "note": "n<3: direction only"
+    },
+    {
+      "group": "fable",
+      "arm": "jefe-fable-normal",
+      "baseline": "top",
+      "scope": "medium",
+      "tasks": 1,
+      "cheaper": 1,
+      "dearer": 0,
+      "ties": 0,
+      "signTestP": 0.5,
+      "meanCostPct": -18.654062648391097,
+      "ciLoPct": -18.654062648391097,
+      "ciHiPct": -18.654062648391097,
+      "meanPassDiffPoints": 0,
+      "minTrials": 1,
+      "note": "n<3: direction only"
+    },
+    {
+      "group": "fable",
+      "arm": "jefe-fable-normal",
+      "baseline": "top",
+      "scope": "large",
+      "tasks": 1,
+      "cheaper": 1,
+      "dearer": 0,
+      "ties": 0,
+      "signTestP": 0.5,
+      "meanCostPct": -47.60485974615588,
+      "ciLoPct": -47.60485974615588,
+      "ciHiPct": -47.60485974615588,
+      "meanPassDiffPoints": 0,
+      "minTrials": 1,
+      "note": "n<3: direction only"
+    },
+    {
+      "group": "fable",
+      "arm": "jefe-fable-normal",
+      "baseline": "top",
+      "scope": "project",
+      "tasks": 2,
+      "cheaper": 2,
+      "dearer": 0,
+      "ties": 0,
+      "signTestP": 0.25,
+      "meanCostPct": -46.76225141628427,
+      "ciLoPct": -49.10325940727853,
+      "ciHiPct": -44.42124342529002,
+      "meanPassDiffPoints": 0,
+      "minTrials": 1,
+      "note": "n<3: direction only"
+    },
+    {
+      "group": "fable",
+      "arm": "jefe-fable-normal",
+      "baseline": "top",
+      "scope": "small",
+      "tasks": 1,
+      "cheaper": 0,
+      "dearer": 1,
+      "ties": 0,
+      "signTestP": 1,
+      "meanCostPct": 52.58773853811789,
+      "ciLoPct": 52.58773853811789,
+      "ciHiPct": 52.58773853811789,
+      "meanPassDiffPoints": 0,
+      "minTrials": 1,
+      "note": "n<3: direction only"
+    },
+    {
+      "group": "fable",
+      "arm": "jefe-fable-normal",
+      "baseline": "top",
+      "scope": "overall",
+      "tasks": 5,
+      "cheaper": 4,
+      "dearer": 1,
+      "ties": 0,
+      "signTestP": 0.18749999999999994,
+      "meanCostPct": -21.439137337799526,
+      "ciLoPct": -47.56749634643177,
+      "ciHiPct": 18.00117871173681,
+      "meanPassDiffPoints": 0,
+      "minTrials": 1,
+      "note": "n<3: direction only"
+    }
+  ],
+  "arms": {
+    "jefe-fable-normal": {
+      "runs": 5,
+      "passed": 4,
+      "costPerPassedTaskUSD": 1.613,
+      "mediumPlusLarge": {
+        "runs": 2,
+        "passed": 2,
+        "costPerPassedTaskUSD": 0.49
+      },
+      "project": {
+        "runs": 2,
+        "passed": 1,
+        "costPerPassedTaskUSD": 4.988,
+        "partsPassedMean": 0.9
+      },
+      "smallOutOfScope": {
+        "runs": 1,
+        "passed": 1,
+        "costPerPassedTaskUSD": 0.485
+      },
+      "bySize": {
+        "large": {
+          "runs": 1,
+          "passed": 1,
+          "costPerPassedTaskUSD": 0.493
+        },
+        "medium": {
+          "runs": 1,
+          "passed": 1,
+          "costPerPassedTaskUSD": 0.488
+        },
+        "project": {
+          "runs": 2,
+          "passed": 1,
+          "costPerPassedTaskUSD": 4.988
+        },
+        "small": {
+          "runs": 1,
+          "passed": 1,
+          "costPerPassedTaskUSD": 0.485
+        }
+      }
+    },
+    "top": {
+      "runs": 5,
+      "passed": 4,
+      "costPerPassedTaskUSD": 2.842,
+      "mediumPlusLarge": {
+        "runs": 2,
+        "passed": 2,
+        "costPerPassedTaskUSD": 0.77
+      },
+      "project": {
+        "runs": 2,
+        "passed": 1,
+        "costPerPassedTaskUSD": 9.509,
+        "partsPassedMean": 0.9
+      },
+      "smallOutOfScope": {
+        "runs": 1,
+        "passed": 1,
+        "costPerPassedTaskUSD": 0.318
+      },
+      "bySize": {
+        "large": {
+          "runs": 1,
+          "passed": 1,
+          "costPerPassedTaskUSD": 0.941
+        },
+        "medium": {
+          "runs": 1,
+          "passed": 1,
+          "costPerPassedTaskUSD": 0.6
+        },
+        "project": {
+          "runs": 2,
+          "passed": 1,
+          "costPerPassedTaskUSD": 9.509
+        },
+        "small": {
+          "runs": 1,
+          "passed": 1,
+          "costPerPassedTaskUSD": 0.318
+        }
+      }
+    }
+  }
+}

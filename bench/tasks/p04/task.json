@@ -1,0 +1,16 @@
+{
+  "id": "p04",
+  "size": "project",
+  "split": "dev",
+  "language": "docs",
+  "summary": "research write-up over a local corpus: answer ten questions with exact citations, computed figures and a conflicts section",
+  "test": ["python3", "-m", "unittest", "discover", "-s", "tests"],
+  "expectedFiles": 2,
+  "parts": [
+    { "id": "A", "title": "Report structure, headings and word limits", "hidden": ["test_a_structure.py"] },
+    { "id": "B", "title": "Key facts of each answer, and no outdated or refuted figures", "hidden": ["test_b_facts.py"] },
+    { "id": "C", "title": "Citations resolve, support their facts, and match sources.json", "hidden": ["test_c_citations.py"] },
+    { "id": "D", "title": "Figures computed from the CSV and the decision table", "hidden": ["test_d_figures.py"] },
+    { "id": "E", "title": "Conflicts section and not-established section", "hidden": ["test_e_conflicts.py"] }
+  ]
+}

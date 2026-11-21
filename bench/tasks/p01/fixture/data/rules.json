@@ -1,0 +1,12 @@
+{
+  "rules": [
+    { "category": "Income", "regex": "^payroll", "flags": "i", "min": 0 },
+    { "category": "Groceries", "contains": "kroger" },
+    { "category": "Dining", "contains": "coffee" },
+    { "category": "Dining", "contains": "bistro" },
+    { "category": "Transport", "contains": "shell" },
+    { "category": "Housing", "contains": "rent", "max": -100000 },
+    { "category": "Utilities", "contains": "utility" },
+    { "category": "Subscriptions", "regex": "netflix|spotify", "flags": "i" }
+  ]
+}

@@ -1,0 +1,3 @@
+# Settings for the newsletter site
+title: Riverside Chess Club
+per_page: 2

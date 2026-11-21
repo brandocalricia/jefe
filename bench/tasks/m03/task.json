@@ -1,0 +1,1 @@
+{ "id": "m03", "size": "medium", "split": "dev", "language": "node", "summary": "expression calculator: tokenizer, parser, evaluator, entry point and CLI", "test": ["node", "--test"], "expectedFiles": 5 }

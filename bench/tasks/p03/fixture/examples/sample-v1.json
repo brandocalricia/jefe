@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "counters": {
+    "project": 2,
+    "task": 3,
+    "comment": 2,
+    "audit": 8
+  },
+  "projects": [
+    {
+      "id": "p1",
+      "name": "Website relaunch",
+      "description": "New marketing site",
+      "archived": false,
+      "createdAt": "2026-02-02T09:00:00.000Z",
+      "updatedAt": "2026-02-02T09:00:00.000Z",
+      "createdBy": "alice"
+    },
+    {
+      "id": "p2",
+      "name": "Mobile app",
+      "description": "",
+      "archived": false,
+      "createdAt": "2026-02-02T09:05:00.000Z",
+      "updatedAt": "2026-02-02T09:05:00.000Z",
+      "createdBy": "bob"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t1",
+      "projectId": "p1",
+      "title": "Draft landing page copy",
+      "description": "",
+      "status": "todo",
+      "priority": "high",
+      "assignee": null,
+      "labels": [
+        "copy"
+      ],
+      "dueDate": "2026-02-20",
+      "completedAt": null,
+      "createdAt": "2026-02-03T10:00:00.000Z",
+      "updatedAt": "2026-02-03T10:00:00.000Z",
+      "createdBy": "alice"
+    },
+    {
+      "id": "t2",
+      "projectId": "p1",
+      "title": "Pick a font pairing",
+      "description": "",
+      "status": "todo",
+      "priority": "normal",
+      "assignee": "carol",
+      "labels": [],
+      "dueDate": null,
+      "completedAt": null,
+      "createdAt": "2026-02-03T10:30:00.000Z",
+      "updatedAt": "2026-02-03T10:30:00.000Z",
+      "createdBy": "alice"
+    },
+    {
+      "id": "t3",
+      "projectId": "p2",
+      "title": "Fix login crash on Android",
+      "description": "",
+      "status": "doing",
+      "priority": "high",
+      "assignee": "bob",
+      "labels": [
+        "bug",
+        "android"
+      ],
+      "dueDate": null,
+      "completedAt": null,
+      "createdAt": "2026-02-04T08:15:00.000Z",
+      "updatedAt": "2026-02-05T14:00:00.000Z",
+      "createdBy": "bob"
+    }
+  ],
+  "comments": [
+    {
+      "id": "c1",
+      "taskId": "t2",
+      "body": "Two candidates are in the shared folder.",
+      "author": "carol",
+      "createdAt": "2026-02-06T11:00:00.000Z"
+    },
+    {
+      "id": "c2",
+      "taskId": "t3",
+      "body": "Reproduced on a Pixel 6.",
+      "author": "bob",
+      "createdAt": "2026-02-06T11:20:00.000Z"
+    }
+  ],
+  "audit": [
+    {
+      "id": "a1",
+      "at": "2026-02-02T09:00:00.000Z",
+      "type": "project.created",
+      "actor": "alice",
+      "subject": {
+        "kind": "project",
+        "id": "p1"
+      },
+      "data": {
+        "name": "Website relaunch"
+      }
+    },
+    {
+      "id": "a2",
+      "at": "2026-02-02T09:05:00.000Z",
+      "type": "project.created",
+      "actor": "bob",
+      "subject": {
+        "kind": "project",
+        "id": "p2"
+      },
+      "data": {
+        "name": "Mobile app"
+      }
+    },
+    {
+      "id": "a3",
+      "at": "2026-02-03T10:00:00.000Z",
+      "type": "task.created",
+      "actor": "alice",
+      "subject": {
+        "kind": "task",
+        "id": "t1"
+      },
+      "data": {
+        "title": "Draft landing page copy",
+        "projectId": "p1"
+      }
+    },
+    {
+      "id": "a4",
+      "at": "2026-02-03T10:30:00.000Z",
+      "type": "task.created",
+      "actor": "alice",
+      "subject": {
+        "kind": "task",
+        "id": "t2"
+      },
+      "data": {
+        "title": "Pick a font pairing",
+        "projectId": "p1"
+      }
+    },
+    {
+      "id": "a5",
+      "at": "2026-02-04T08:15:00.000Z",
+      "type": "task.created",
+      "actor": "bob",
+      "subject": {
+        "kind": "task",
+        "id": "t3"
+      },
+      "data": {
+        "title": "Fix login crash on Android",
+        "projectId": "p2"
+      }
+    },
+    {
+      "id": "a6",
+      "at": "2026-02-05T14:00:00.000Z",
+      "type": "task.moved",
+      "actor": "bob",
+      "subject": {
+        "kind": "task",
+        "id": "t3"
+      },
+      "data": {
+        "from": "todo",
+        "to": "doing"
+      }
+    },
+    {
+      "id": "a7",
+      "at": "2026-02-06T11:00:00.000Z",
+      "type": "comment.added",
+      "actor": "carol",
+      "subject": {
+        "kind": "comment",
+        "id": "c1"
+      },
+      "data": {
+        "taskId": "t2"
+      }
+    },
+    {
+      "id": "a8",
+      "at": "2026-02-06T11:20:00.000Z",
+      "type": "comment.added",
+      "actor": "bob",
+      "subject": {
+        "kind": "comment",
+        "id": "c2"
+      },
+      "data": {
+        "taskId": "t3"
+      }
+    }
+  ]
+}

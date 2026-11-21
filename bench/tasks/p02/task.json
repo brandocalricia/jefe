@@ -1,0 +1,16 @@
+{
+  "id": "p02",
+  "size": "project",
+  "split": "dev",
+  "language": "python",
+  "summary": "behaviour-preserving refactor: split a 600-line global-state module into a package, unify three pricing copies, add a storage interface, keep a deprecation shim and rebuild the CLI",
+  "test": ["python3", "-m", "unittest", "discover", "-s", "tests"],
+  "expectedFiles": 17,
+  "parts": [
+    { "id": "A", "title": "package layout, models, errors, parsing and the Warehouse object (no global state)", "hidden": ["test_a_core.py"] },
+    { "id": "B", "title": "pricing rules in one place, the two documented fixes, orders and reports", "hidden": ["test_b_pricing.py"] },
+    { "id": "C", "title": "persistence behind a Store interface (memory and JSON file)", "hidden": ["test_c_persistence.py"] },
+    { "id": "D", "title": "stockroom.py as a deprecation shim over the new package", "hidden": ["test_d_shim.py"] },
+    { "id": "E", "title": "command line on the new API plus the low-stock command", "hidden": ["test_e_cli.py"] }
+  ]
+}

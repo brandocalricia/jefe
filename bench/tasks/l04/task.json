@@ -1,0 +1,1 @@
+{ "id": "l04", "size": "large", "split": "heldout", "language": "node", "summary": "directory sync tool: real file-system work in temp dirs across nine modules", "test": ["node", "--test"], "expectedFiles": 9 }

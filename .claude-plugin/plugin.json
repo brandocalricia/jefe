@@ -1,0 +1,22 @@
+{
+  "name": "jefe",
+  "version": "0.1.0",
+  "description": "For big jobs in Claude Code: answer a few questions once and approve once, at Go. Builders on a cheaper model do the typing. A script, not the model, runs the checks (your tests, a secrets scan, the agreed checks) and writes the result; the planner is told not to report done on a failed gate, and a separate reviewer reads the work.",
+  "author": { "name": "brandocalricia" },
+  "homepage": "https://github.com/brandocalricia/jefe",
+  "repository": "https://github.com/brandocalricia/jefe",
+  "license": "MIT",
+  "keywords": [
+    "verification",
+    "testing",
+    "secrets-scan",
+    "workflow",
+    "done-gate",
+    "handoff",
+    "subagents",
+    "planning",
+    "projects",
+    "cost"
+  ],
+  "icon": "./.claude-plugin/icon.svg"
+}

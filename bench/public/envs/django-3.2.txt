@@ -1,0 +1,19 @@
+# django/django at environment_setup_commit 65dfb06a1ab56c238cc80f5e1c31f61210c4577d, Python 3.11
+argon2-cffi==25.1.0
+argon2-cffi-bindings==26.2.0
+asgiref==3.13.0
+bcrypt==5.0.0
+cffi==2.1.1
+docutils==0.23
+Jinja2==3.1.6
+MarkupSafe==3.0.4
+numpy==2.4.6
+pillow==13.0.0
+pycparser==3.12
+pymemcache==4.0.0
+pytz==2026.6
+pywatchman==4.0.0
+PyYAML==6.0.3
+sqlparse==0.6.1
+tblib==3.2.2
+tzdata==2026.6

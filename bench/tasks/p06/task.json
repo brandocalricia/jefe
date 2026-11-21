@@ -1,0 +1,50 @@
+{
+  "id": "p06",
+  "size": "project",
+  "split": "heldout",
+  "language": "node",
+  "summary": "booking and scheduling library: fix twelve reported bugs, move six functions to an options-object API, and add a test file per module. The parts are ordered A to E: B and C rely on the fixes of A, D changes the calls fixed in B and C, and E tests the final code.",
+  "test": [
+    "node",
+    "--test"
+  ],
+  "expectedFiles": 34,
+  "parts": [
+    {
+      "id": "A",
+      "title": "Core interval, time and rule logic (issues 1-4)",
+      "hidden": [
+        "part-a-core.test.mjs"
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Bookings, buffers, waitlist, cancellation, batch (issues 5-8)",
+      "hidden": [
+        "part-b-bookings.test.mjs"
+      ]
+    },
+    {
+      "id": "C",
+      "title": "Reports, sorting, state files and CLI (issues 9-12)",
+      "hidden": [
+        "part-c-reports-cli.test.mjs"
+      ]
+    },
+    {
+      "id": "D",
+      "title": "Replace positional calls and the global clock with options objects",
+      "hidden": [
+        "part-d-options-api.test.mjs"
+      ]
+    },
+    {
+      "id": "E",
+      "title": "A test file per module that catches broken implementations",
+      "hidden": [
+        "part-e-test-quality.test.mjs"
+      ]
+    }
+  ],
+  "ordered": true
+}

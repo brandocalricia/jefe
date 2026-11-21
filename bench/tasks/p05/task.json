@@ -1,0 +1,16 @@
+{
+  "id": "p05",
+  "size": "project",
+  "split": "heldout",
+  "language": "python",
+  "summary": "static-site generator built from scratch: front matter and markdown subset, template language, site structure and pagination, asset hashing and link checking, incremental CLI build",
+  "test": ["python3", "-m", "unittest", "discover", "-s", "tests"],
+  "expectedFiles": 17,
+  "parts": [
+    { "id": "A", "title": "content loading: front matter, markdown subset, pages", "hidden": ["test_a_content.py"] },
+    { "id": "B", "title": "template language with includes and line-numbered errors", "hidden": ["test_b_templates.py"] },
+    { "id": "C", "title": "site structure: slugs, tags, pagination, drafts and future dates", "hidden": ["test_c_site.py"] },
+    { "id": "D", "title": "asset hashing and internal link checking", "hidden": ["test_d_assets_links.py"] },
+    { "id": "E", "title": "CLI build, check and new with an incremental content-based build", "hidden": ["test_e_cli_build.py"] }
+  ]
+}

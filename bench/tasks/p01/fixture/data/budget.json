@@ -1,0 +1,5 @@
+{
+  "monthly": { "Groceries": 45000, "Dining": 10000, "Transport": 12000 },
+  "yearly": { "Travel": 100000 },
+  "carryOver": ["Groceries"]
+}

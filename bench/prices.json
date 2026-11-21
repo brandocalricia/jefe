@@ -1,0 +1,18 @@
+{
+  "_note": "VERIFY BEFORE USE. USD per million tokens, copied by hand from the pricing page on the fetched date below. Prices change; a model missing here, or with a null field, makes cost estimates say 'prices missing' instead of guessing. aliases maps a Claude Code alias to the price key it is ASSUMED to resolve to: check the real model id in a run's modelUsage keys and edit this file if it differs.",
+  "fetched": "2026-11-17",
+  "verified": "2026-11-17: every row below re-checked against https://platform.claude.com/docs/en/about-claude/pricing (standard tier, no batch or fast-mode discount)",
+  "sources": [
+    "https://platform.claude.com/docs/en/about-claude/pricing",
+    "https://claude.com/pricing"
+  ],
+  "aliases": { "fable": "fable-5-2", "opus": "opus-5-5", "sonnet": "sonnet-5-5", "haiku": "haiku-5-5" },
+  "models": {
+    "fable-5-2":  { "name": "Claude Fable 5.2",  "input": 8,    "cacheWrite5m": 10,    "cacheWrite1h": 16,  "cacheRead": 0.20, "output": 40 },
+    "opus-5-5":   { "name": "Claude Opus 5.5",   "input": 4,    "cacheWrite5m": 5,     "cacheWrite1h": 8,   "cacheRead": 0.20, "output": 20 },
+    "sonnet-5-5": { "name": "Claude Sonnet 5.5", "input": 2,    "cacheWrite5m": 2.5,   "cacheWrite1h": 4,   "cacheRead": 0.10, "output": 10 },
+    "haiku-5-5":  { "name": "Claude Haiku 5.5 (prompts up to 100,000 tokens; over that: input 0.50, cache write 0.625, cache read 0.05, output 2.50)", "input": 0.10, "cacheWrite5m": 0.125, "cacheWrite1h": 0.20, "cacheRead": 0.01, "output": 0.50 },
+    "haiku-4-5":  { "name": "Claude Haiku 4.5",  "input": 1,    "cacheWrite5m": 1.25,  "cacheWrite1h": 2,   "cacheRead": 0.10, "output": 5 },
+    "sonnet-4-6": { "name": "Claude Sonnet 4.6", "input": 3,    "cacheWrite5m": 3.75,  "cacheWrite1h": 6,   "cacheRead": 0.30, "output": 15 }
+  }
+}

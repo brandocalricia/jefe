@@ -1,0 +1,7 @@
+<!doctype html>
+<html><head><title>{{ tag.name }}</title></head>
+<body>
+{% include "header.html" %}
+<h1>{{ tag.name }} ({{ tag.count }})</h1>
+<ul>{% for post in posts %}<li><a href="{{ post.url }}">{{ post.title }}</a></li>{% endfor %}</ul>
+</body></html>

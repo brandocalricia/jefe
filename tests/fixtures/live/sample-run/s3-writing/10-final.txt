@@ -1,0 +1,50 @@
+  ANSWERS: None needed.
+  USUAL CHOICES: Plain prose, friendly tone, one short heading. It covers the add, done and clear commands, the local todos.json, no account and no network, the
+  install line, the email feedback and two-day reply promise, and the tags and due dates coming next. Git is left uncommitted on the current branch.
+  COMMANDS: sh .jefe/check.sh, a word-count check that fails outside 120–180.
+  INSTALLS: none.
+  LIVE STEPS: none. The scout flagged that the email address and two-day reply promise are outward-facing, so the announcement is only drafted, not sent.
+  will run without asking: sh .jefe/check.sh
+
+  Ran 1 shell command
+
+⏺ jefe:builder(Write announcement)
+  ⎿  Backgrounded agent (↓ to manage · ctrl+o to expand)
+
+⏺ The builder is still writing the announcement, so I'm waiting for it to finish.
+
+⏺ Agent "Write announcement" finished · 14s
+
+  Ran 1 shell command
+
+⏺ jefe:researcher(Review announcement)
+  ⎿  Backgrounded agent (↓ to manage · ctrl+o to expand)
+
+⏺ The gate passed, and the reviewer is still running. I'm waiting for its answer.
+
+⏺ Agent "Review announcement" finished · 10s
+
+  Ran 1 shell command
+
+⏺ skipped: tests, because the tests kind was not approved at Go and the job has no tests. Nothing was committed. To commit it yourself, run git add
+  announcement.md && git commit -m "Add tick announcement".
+
+  tests: not run (the tests kind was not approved at Go)
+  check: PASS (sh .jefe/check.sh, exit 0)
+  secrets: none found (2 files scanned, 0 skipped, 0 allowlisted)
+  review: PASS
+  commit: none (no --commit given)
+  gate: PASS
+
+  announcement.md is written. It has a short "Meet tick" heading and about 145 words. The reviewer found every fact matches notes.md and nothing invented.
+
+  noticed: The email address for feedback isn't in the notes, so the text only says "by email". Add the real address before you publish.
+  noticed: The announcement makes a two-day reply promise, so someone has to own that inbox.
+
+✻ Churned for 54s · done 2:00 AM
+ jefe · ✓ done                                                                                                                                              [-]
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ commit this
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏸ manual mode on · /tasks to see subagents

@@ -1,0 +1,1 @@
+{ "id": "l02", "size": "large", "split": "dev", "language": "node", "summary": "API change across ten modules: new repository interface, services must keep their behaviour", "test": ["node", "--test"], "expectedFiles": 10 }

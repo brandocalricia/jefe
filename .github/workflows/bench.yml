@@ -1,0 +1,413 @@
+name: bench
+# Runs the Jefe benchmark on GitHub-hosted Linux runners instead of a maintainer's machine, one runner per task in parallel.
+# Manual start only. The plan and run jobs use the environment bench: each waits for the owner's approval, and the run
+# stops at once with a clear message until that environment's secret CLAUDE_CODE_OAUTH_TOKEN exists.
+#   plan     resolves the task list, prints the estimate, proves the token with one tiny real call
+#   run      one shard per task (all arms and trials of that task in one runner call), each uploads bench-results-<task>
+#   collect  merges the shards into one results file and one table, bench-results-merged
+# Setup, cost and limits: docs/BENCH-IN-CI.md
+on:
+  workflow_dispatch:
+    inputs:
+      arms:
+        description: "Arms, comma separated (for example jefe,top or top,jefe-fable-normal)"
+        required: true
+        default: "jefe,top"
+      tasks:
+        description: "Task ids, comma separated (for example m01,l01,p01). Empty: name a group in extra_args (--size, --split, --smoke, --pilot)"
+        required: false
+        default: ""
+      trials:
+        description: "Trials per task and arm. Empty: the runner's own default (1, or what --pilot or --smoke in extra_args sets)"
+        required: false
+        default: ""
+      seed:
+        description: "Seed for the arm order. Leave empty: a fresh run picks one random seed for all shards (recorded in the results) and a resume keeps the recorded one"
+        required: false
+        default: ""
+      max_utilization:
+        description: "Each shard stops starting runs at this five-hour plan utilisation (0 to 1)"
+        required: true
+        default: "0.85"
+      total_budget_usd:
+        description: "Spending cap PER SHARD (one task) in API-equivalent USD; the whole dispatch can spend up to shards times this. Empty: the runner's own default (20, or what --pilot or --smoke sets)"
+        required: false
+        default: ""
+      max_parallel:
+        description: "Shards running at the same time (1 to 12)"
+        type: choice
+        required: true
+        default: "6"
+        options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+      extra_args:
+        description: "Extra bench/run.mjs flags, split on spaces (no quoting). Example: --levels normal,thorough --max-budget-usd 3. Not allowed: --allow-env --tasks --tasks-dir --resume --out --seed --auth --run --estimate --print-commands --sequence --prefill"
+        required: false
+        default: ""
+      resume_run_id:
+        description: "Run id of an earlier bench run: only the tasks that are missing or incomplete there are run again; the complete ones are reused. Refused unless the commit, arms, trials and settings are the same"
+        required: false
+        default: ""
+permissions:
+  contents: read
+  actions: read
+defaults:
+  run:
+    shell: bash
+env:
+  DISABLE_AUTOUPDATER: "1"
+  CLAUDE_CODE_VERSION: "2.1.327"
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # The token is a secret of the protected environment bench (the owner is its required reviewer), so this job
+    # waits for the owner's approval; without that secret it stops at its first token step. Collect does not read it. See docs/BENCH-IN-CI.md.
+    environment: bench
+    outputs:
+      shards: ${{ steps.plan.outputs.shards }}
+      all_tasks: ${{ steps.plan.outputs.all_tasks }}
+      base_args: ${{ steps.plan.outputs.base_args }}
+      max_parallel: ${{ steps.plan.outputs.max_parallel }}
+      seed: ${{ steps.plan.outputs.seed }}
+      any: ${{ steps.plan.outputs.any }}
+      has_resume: ${{ steps.plan.outputs.has_resume }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Refuse to start while another bench run is active
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          THIS_RUN: ${{ github.run_id }}
+        run: |
+          others="$(gh api "repos/${REPO}/actions/workflows/bench.yml/runs?per_page=50" | jq -r --arg me "$THIS_RUN" '[.workflow_runs[] | select((.id | tostring) != $me) | select(.status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending" or .status == "requested") | .id | tostring] | join(", ")')"
+          if [ -n "$others" ]; then
+            echo "::error::another bench run is still active (run id ${others}). Wait for it, or cancel it, then start this one again."
+            exit 1
+          fi
+      - name: Download the earlier run's shard results (resume)
+        if: inputs.resume_run_id != ''
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: bench-results-*
+          path: bench/previous
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ github.token }}
+      - name: Plan the shards (inputs reach the shell through environment variables only)
+        id: plan
+        env:
+          IN_ARMS: ${{ inputs.arms }}
+          IN_TASKS: ${{ inputs.tasks }}
+          IN_TRIALS: ${{ inputs.trials }}
+          IN_SEED: ${{ inputs.seed }}
+          IN_MAX_UTILIZATION: ${{ inputs.max_utilization }}
+          IN_TOTAL_BUDGET_USD: ${{ inputs.total_budget_usd }}
+          IN_MAX_PARALLEL: ${{ inputs.max_parallel }}
+          IN_EXTRA_ARGS: ${{ inputs.extra_args }}
+          IN_RESUME_RUN_ID: ${{ inputs.resume_run_id }}
+        run: |
+          case "$IN_MAX_PARALLEL" in
+            [1-9] | 1[0-2]) ;;
+            *) echo "::error::max_parallel must be a whole number from 1 to 12"; exit 1 ;;
+          esac
+          case "$IN_SEED" in
+            *[!0-9]*) echo "::error::seed must be empty or a whole number"; exit 1 ;;
+          esac
+          read -r -a extra <<< "$IN_EXTRA_ARGS"
+          for w in "${extra[@]}"; do
+            case "$w" in
+              --allow-env | --tasks | --tasks-dir | --resume | --out | --seed | --auth | --run | --estimate | --print-commands | --sequence | --prefill)
+                echo "::error::extra_args may not contain ${w}: the workflow owns it (the token list, the shard task, the seed, the results file and the mode)"
+                exit 1 ;;
+            esac
+          done
+          # --trials and --total-budget-usd are passed only when typed: they would override the runner's --pilot and --smoke presets
+          {
+            printf '%s\n' --auth login --arms "$IN_ARMS" --max-utilization "$IN_MAX_UTILIZATION"
+            if [ -n "$IN_TRIALS" ]; then printf '%s\n' --trials "$IN_TRIALS"; fi
+            if [ -n "$IN_TOTAL_BUDGET_USD" ]; then printf '%s\n' --total-budget-usd "$IN_TOTAL_BUDGET_USD"; fi
+            if [ -n "$IN_TASKS" ]; then printf '%s\n' --tasks "$IN_TASKS"; fi
+            if [ "${#extra[@]}" -gt 0 ]; then printf '%s\n' "${extra[@]}"; fi
+          } > "$RUNNER_TEMP/bench-args"
+          planargs=(--args "$RUNNER_TEMP/bench-args" --resume-out bench/resume --claude-version "$CLAUDE_CODE_VERSION")
+          if [ -n "$IN_SEED" ]; then planargs+=(--seed "$IN_SEED"); fi
+          # a resume must find the earlier run's results; the plan refuses (before anything is spent) when there are none
+          if [ -n "$IN_RESUME_RUN_ID" ]; then planargs+=(--previous bench/previous); fi
+          node .github/scripts/bench-plan.mjs "${planargs[@]}" > "$RUNNER_TEMP/plan.json"
+          jq . "$RUNNER_TEMP/plan.json"
+          all="$(jq -r '.tasks | join(",")' "$RUNNER_TEMP/plan.json")"
+          est=()
+          while IFS= read -r a; do est+=("$a"); done < <(jq -r '.baseArgs[]' "$RUNNER_TEMP/plan.json")
+          node bench/run.mjs --estimate "${est[@]}" --tasks "$all" | tee "$RUNNER_TEMP/estimate.txt"
+          has_resume=false
+          if [ -d bench/resume ] && [ -n "$(ls -A bench/resume)" ]; then has_resume=true; fi
+          shards="$(jq '.shards | length' "$RUNNER_TEMP/plan.json")"
+          {
+            echo "shards=$(jq -c .shards "$RUNNER_TEMP/plan.json")"
+            echo "all_tasks=${all}"
+            echo "base_args=$(jq -c .baseArgs "$RUNNER_TEMP/plan.json")"
+            echo "max_parallel=${IN_MAX_PARALLEL}"
+            echo "seed=$(jq -r .seed "$RUNNER_TEMP/plan.json")"
+            echo "any=$(jq '(.shards | length) > 0' "$RUNNER_TEMP/plan.json")"
+            echo "has_resume=${has_resume}"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "## Benchmark plan"
+            echo
+            echo "- tasks (${all}): $(jq -r '.tasks | length' "$RUNNER_TEMP/plan.json")"
+            echo "- shards: $(jq -r '[.shards[] | select(.mode == "run")] | map(.task) | join(", ")' "$RUNNER_TEMP/plan.json") run fresh; $(jq -r '[.shards[] | select(.mode == "continue")] | map(.task) | join(", ")' "$RUNNER_TEMP/plan.json") continue a partial file; at most ${IN_MAX_PARALLEL} at a time"
+            echo "- reused from the earlier run (carried forward, not run): $(jq -r '[.shards[] | select(.mode == "reuse")] | map(.task) | join(", ")' "$RUNNER_TEMP/plan.json")"
+            echo "- seed for every shard: $(jq -r .seed "$RUNNER_TEMP/plan.json")"
+            echo "- arms: $(jq -r '.arms | join(", ")' "$RUNNER_TEMP/plan.json"); trials per task and arm: $(jq -r .trials "$RUNNER_TEMP/plan.json")"
+            echo "- spending cap per shard: \$$(jq -r .totalBudget "$RUNNER_TEMP/plan.json"); the whole dispatch can spend up to ${shards} times that"
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/estimate.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Install the pinned Claude Code CLI
+        run: |
+          npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          v="$(claude --version)"
+          echo "$v"
+          case "$v" in
+            "${CLAUDE_CODE_VERSION} "*) ;;
+            *) echo "::error::installed claude is not ${CLAUDE_CODE_VERSION}"; exit 1 ;;
+          esac
+      - name: Stop early if the subscription token secret is missing
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "::error::The secret CLAUDE_CODE_OAUTH_TOKEN of the environment bench is empty or missing. Create it as described in docs/BENCH-IN-CI.md, then start the run again."
+            exit 1
+          fi
+      - name: Preflight, one minimal real call to prove the token is accepted (before any shard starts)
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          rc=0
+          out="$(cd "$RUNNER_TEMP" && timeout 60 claude -p "Reply with the word ok" --model haiku --output-format json --no-session-persistence --setting-sources project 2>/dev/null)" || rc=$?
+          ok=0
+          if [ "$rc" -eq 0 ]; then
+            printf '%s' "$out" | node -e '
+              let s = ""; process.stdin.on("data", (c) => { s += c; }).on("end", () => {
+                try {
+                  const j = JSON.parse(s);
+                  const r = Array.isArray(j) ? j.find((x) => x && x.type === "result") : j;
+                  process.exit(r && r.is_error !== true && typeof r.result === "string" && r.result.length > 0 ? 0 : 1);
+                } catch { process.exit(1); }
+              });
+            ' && ok=1
+          fi
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::the Claude token was not accepted (preflight exit ${rc}): run \`claude setup-token\` again and update the secret"
+            exit 1
+          fi
+          echo "preflight: the token was accepted"
+      - name: Keep the earlier results for the shards and the merge
+        if: steps.plan.outputs.has_resume == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bench-resume
+          path: bench/resume
+          retention-days: 30
+  run:
+    # One shard per task. mode: run (nothing earlier), continue (resume an earlier partial file; it must be there)
+    # or reuse (an earlier file is complete: carried forward unchanged). Every shard uploads exactly one artifact,
+    # bench-results-<task>, holding the authoritative file for that task, so any later resume finds all of them.
+    name: shard ${{ matrix.task }} (${{ matrix.mode }})
+    needs: plan
+    if: needs.plan.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    # The token is a secret of the protected environment bench (the owner is its required reviewer), so this job
+    # waits for the owner's approval; without that secret it stops at its first token step. Collect does not read it. See docs/BENCH-IN-CI.md.
+    environment: bench
+    strategy:
+      fail-fast: false
+      max-parallel: ${{ fromJSON(needs.plan.outputs.max_parallel) }}
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.shards) }}
+    env:
+      TASK: ${{ matrix.task }}
+      MODE: ${{ matrix.mode }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Install the pinned Claude Code CLI
+        if: matrix.mode != 'reuse'
+        run: |
+          npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          v="$(claude --version)"
+          echo "$v"
+          case "$v" in
+            "${CLAUDE_CODE_VERSION} "*) ;;
+            *) echo "::error::installed claude is not ${CLAUDE_CODE_VERSION}"; exit 1 ;;
+          esac
+      - name: Git identity for tests that make commits (global, so a test repo's own identity still wins)
+        if: matrix.mode != 'reuse'
+        run: |
+          git config --global user.name ci
+          git config --global user.email ci@example.invalid
+      - name: Download the earlier file of this task (continue or reuse); a failure here fails the shard
+        if: matrix.mode != 'run'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: bench-resume
+          path: bench/resume
+      - name: Carry the reused file forward unchanged (this task was complete in the earlier run)
+        if: matrix.mode == 'reuse'
+        run: |
+          mkdir -p bench/results
+          cp "bench/resume/${TASK}.json" "bench/results/${TASK}.json"
+          echo "reused ${TASK} from the earlier run"
+      - name: Run this task with every arm and trial
+        id: run
+        if: matrix.mode != 'reuse'
+        timeout-minutes: 330
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          BASE_ARGS: ${{ needs.plan.outputs.base_args }}
+        run: |
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "::error::The secret CLAUDE_CODE_OAUTH_TOKEN of the environment bench is empty or missing."
+            exit 1
+          fi
+          base=()
+          while IFS= read -r a; do base+=("$a"); done < <(jq -r '.[]' <<< "$BASE_ARGS")
+          mkdir -p bench/results
+          out="bench/results/${TASK}.json"
+          args=("${base[@]}" --tasks "$TASK")
+          if [ "$MODE" = "continue" ]; then
+            if [ ! -f "bench/resume/${TASK}.json" ]; then
+              echo "::error::this shard continues an earlier partial file for ${TASK}, but bench/resume/${TASK}.json is not there. Not starting from scratch: that would spend the budget again."
+              exit 1
+            fi
+            cp "bench/resume/${TASK}.json" "$out"
+            args+=(--resume "$out")
+          else
+            args+=(--out "$out")
+          fi
+          # --allow-env goes LAST: the runner keeps the last --allow-env it sees, so nothing earlier can replace it.
+          args+=(--allow-env CLAUDE_CODE_OAUTH_TOKEN,DISABLE_AUTOUPDATER)
+          node bench/run.mjs --run "${args[@]}" 2>&1 | tee "bench/results/ci-run-${GITHUB_RUN_ID}-${TASK}.log"
+      - name: Redact the token from the results before upload
+        if: always()
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: node .github/scripts/bench-scan-token.mjs --redact bench/results
+      - name: Scan the results for the token (fails closed; the upload below needs this to succeed)
+        id: scan
+        if: always()
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: node .github/scripts/bench-scan-token.mjs bench/results
+      - name: Shard summary
+        if: always() && steps.scan.outcome == 'success'
+        env:
+          RUN_OUTCOME: ${{ steps.run.outcome }}
+        run: |
+          {
+            echo "### shard ${TASK} (${MODE}): benchmark step ${RUN_OUTCOME}"
+            grep -hE '^(stopped early|refusing to start):' "bench/results/ci-run-${GITHUB_RUN_ID}-${TASK}.log" 2>/dev/null || echo "No early-stop line from the runner."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Fail the shard only if it did not really work (probe exit not 0, or no run with a countable result)
+        if: always() && steps.run.outcome != 'skipped'
+        run: node .github/scripts/bench-shard-check.mjs "bench/results/${TASK}.json" "bench/results/ci-run-${GITHUB_RUN_ID}-${TASK}.log"
+      - name: Upload this shard (also after a cut-off, so it can be resumed; never after a failed token scan)
+        if: always() && steps.scan.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bench-results-${{ matrix.task }}
+          path: bench/results
+          retention-days: 30
+          if-no-files-found: warn
+  collect:
+    needs: [plan, run]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Download this run's shard results
+        continue-on-error: true
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: bench-results-*
+          path: collected/shards
+      - name: Merge the shards into one results file
+        id: merge
+        env:
+          ALL_TASKS: ${{ needs.plan.outputs.all_tasks }}
+        run: node .github/scripts/bench-merge.mjs --expect "$ALL_TASKS" --out bench/merged collected/shards
+      - name: Job summary (table, what is missing, how to run only that)
+        if: always()
+        env:
+          RUN_RESULT: ${{ needs.run.result }}
+          MERGE_OUTCOME: ${{ steps.merge.outcome }}
+          ALL_TASKS: ${{ needs.plan.outputs.all_tasks }}
+          SEED: ${{ needs.plan.outputs.seed }}
+          IN_ARMS: ${{ inputs.arms }}
+          IN_TRIALS: ${{ inputs.trials }}
+          IN_MAX_UTILIZATION: ${{ inputs.max_utilization }}
+          IN_TOTAL_BUDGET_USD: ${{ inputs.total_budget_usd }}
+          IN_MAX_PARALLEL: ${{ inputs.max_parallel }}
+          IN_EXTRA_ARGS: ${{ inputs.extra_args }}
+        run: |
+          {
+            echo "## Jefe benchmark, merged (GitHub-hosted Linux runners, claude ${CLAUDE_CODE_VERSION})"
+            echo
+            echo "Results from these runners are Linux results, not laptop results. Label them that way."
+            echo
+            if [ -f bench/merged/merged.json ]; then
+              node bench/scorer.mjs --table bench/merged/merged.json || echo "(scorer could not read the merged file)"
+              echo
+              echo "Merged shards: $(jq -r '.merged | join(", ")' bench/merged/report.json). Shard jobs finished with: ${RUN_RESULT}."
+              if [ "$(jq '.missing | length' bench/merged/report.json)" -gt 0 ]; then echo; echo "Missing (no usable shard artifact): $(jq -r '.missing | join(", ")' bench/merged/report.json)"; fi
+              jq -r '.incomplete[] | "Incomplete: \(.task) (\(.reasons | join("; ")))"' bench/merged/report.json
+            else
+              echo "No merged file was written."
+              if [ -f bench/merged/report.json ]; then jq -r '.mismatches[] | "Refused to merge: \(.field) differs: \(.values | tostring)"' bench/merged/report.json; fi
+              echo "Shard jobs finished with: ${RUN_RESULT}."
+            fi
+            if { [ "${RUN_RESULT}" != "success" ] && [ "${RUN_RESULT}" != "skipped" ]; } || [ "${MERGE_OUTCOME}" != "success" ]; then
+              echo
+              echo "To run only what is missing or incomplete (the complete shards of this run are reused; the commit, arms, trials and settings must be the same), start:"
+              echo
+              printf '    gh workflow run bench.yml -f arms=%s -f tasks=%s -f seed=%s -f max_utilization=%s -f max_parallel=%s -f resume_run_id=%s' "$IN_ARMS" "$ALL_TASKS" "$SEED" "$IN_MAX_UTILIZATION" "$IN_MAX_PARALLEL" "$GITHUB_RUN_ID"
+              if [ -n "$IN_TRIALS" ]; then printf ' -f trials=%s' "$IN_TRIALS"; fi
+              if [ -n "$IN_TOTAL_BUDGET_USD" ]; then printf ' -f total_budget_usd=%s' "$IN_TOTAL_BUDGET_USD"; fi
+              if [ -n "$IN_EXTRA_ARGS" ]; then printf " -f extra_args='%s'" "${IN_EXTRA_ARGS//\'/}"; fi
+              echo
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload the merged results
+        if: always() && hashFiles('bench/merged/merged.json') != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bench-results-merged
+          path: bench/merged
+          retention-days: 30
+      - name: Fail the run if a shard failed
+        if: always()
+        env:
+          RUN_RESULT: ${{ needs.run.result }}
+        run: |
+          if [ "$RUN_RESULT" != "success" ] && [ "$RUN_RESULT" != "skipped" ]; then
+            echo "::error::the shard jobs finished with: ${RUN_RESULT}. See the summary for what is missing and how to run only that."
+            exit 1
+          fi

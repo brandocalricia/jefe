@@ -1,0 +1,8 @@
+--- FAIL: TestBad (0.00s)
+    a_test.go:4: got 2, want 3
+--- FAIL: TestSub (0.00s)
+    --- FAIL: TestSub/inner (0.00s)
+        a_test.go:6: inner failed: x
+FAIL
+FAIL	ex	0.133s
+FAIL
